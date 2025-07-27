@@ -1,0 +1,286 @@
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:56:50.997Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:58:34.413Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:58:36.804Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:58:59.979Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:59:12.134Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:59:35.920Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T09:59:37.921Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:00:55.297Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:00:55.307Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:01:07.710Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:01:07.718Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:01:18.838Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:01:18.845Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:01:34.528Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:01:34.536Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:01:56.860Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:01:56.869Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:03:29.396Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:03:29.405Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:04:04.028Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:04:04.037Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T10:04:04.215Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::1",
+            "method": "GET",
+            "url": "/api/v1/test"
+        },
+        "message": {
+            "success": true
+        },
+        "data": null
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:04:07.757Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:04:07.764Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T10:04:11.220Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::1",
+            "method": "GET",
+            "url": "/api/v1/test"
+        },
+        "message": {
+            "success": true
+        },
+        "data": null
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:04:32.439Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:04:32.450Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:05:24.924Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:05:24.932Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:05:46.794Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T10:05:46.803Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T10:05:48.496Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::1",
+            "method": "GET",
+            "url": "/api/v1/test"
+        },
+        "message": "The operation has been successful",
+        "data": null
+    }
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T10:08:07.334Z",
+    "meta": {}
+}
