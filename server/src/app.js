@@ -9,6 +9,7 @@ import config from './config/config.js';
 import responseMessage from './constant/responseMessage.js';
 import httpError from './utils/httpError.js';
 import globalErrorHandler from './middlewares/globalErrorHandler.js';
+import { generalLimiter } from './middlewares/rateLimiter.js';
 import routes from './routes/routes.js';
 
 dotenv.config();
@@ -42,6 +43,8 @@ app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 // Serve static files from the 'Public' folder
 app.use(express.static('Public'));
 
+// Apply rate limiting to all routes
+app.use('/api/v1', generalLimiter);
 
 // Routes
 app.get('/api/v1/healthcheck', async (req, res) => {
