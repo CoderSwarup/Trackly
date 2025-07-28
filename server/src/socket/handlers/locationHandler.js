@@ -1,4 +1,5 @@
 import LocationService from '../../services/LocationService.js';
+import ChatService from '../../services/ChatService.js';
 import { validateSocketData } from '../../middlewares/validation.js';
 import { shareLocationSchema, liveLocationUpdateSchema } from '../../validators/schemas.js';
 import { publishMessage, CHANNELS } from '../../config/redisClient.js';
@@ -21,7 +22,27 @@ export const handleShareOneTimeLocation = async (socket, data) => {
       validatedData
     );
 
-    // Emit location to all users in the room
+    // Create a location message in chat
+    const locationMessage = await ChatService.createMessage({
+      userId: socket.user.id,
+      username: socket.username,
+      content: 'Shared location',
+      type: 'location',
+      location: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        accuracy: location.accuracy,
+        timestamp: location.timestamp,
+        type: 'one_time',
+        isActive: true
+      }
+    });
+
+    // Emit location message to all users (including sender)
+    socket.to('general').emit('new_message', locationMessage.toJSON());
+    socket.emit('message_sent', locationMessage.toJSON());
+
+    // Also emit dedicated location event for map updates
     socket.to('general').emit('location_shared', {
       location: location.toJSON(),
       type: 'one_time',
@@ -31,7 +52,8 @@ export const handleShareOneTimeLocation = async (socket, data) => {
 
     // Send confirmation to sender
     socket.emit('location_shared_success', {
-      location: location.toJSON()
+      location: location.toJSON(),
+      message: locationMessage.toJSON()
     });
 
     // Publish location shared event for scalability
@@ -68,10 +90,30 @@ export const handleStartLiveLocationSharing = async (socket, data) => {
       validatedData
     );
 
+    // Create a live location message in chat
+    const liveLocationMessage = await ChatService.createMessage({
+      userId: socket.user.id,
+      username: socket.username,
+      content: 'Started sharing live location',
+      type: 'location',
+      location: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        accuracy: location.accuracy,
+        timestamp: location.timestamp,
+        type: 'live',
+        isActive: true
+      }
+    });
+
     // Join live location room for this user
     socket.join(`live_location_${socket.user.id}`);
 
-    // Emit live location start to all users in the room
+    // Emit live location message to all users (including sender)
+    socket.to('general').emit('new_message', liveLocationMessage.toJSON());
+    socket.emit('message_sent', liveLocationMessage.toJSON());
+
+    // Also emit dedicated live location event for map updates
     socket.to('general').emit('live_location_started', {
       location: location.toJSON(),
       sharedBy: socket.username,
@@ -81,7 +123,8 @@ export const handleStartLiveLocationSharing = async (socket, data) => {
 
     // Send confirmation to sender
     socket.emit('live_location_started_success', {
-      location: location.toJSON()
+      location: location.toJSON(),
+      message: liveLocationMessage.toJSON()
     });
 
     // Publish live location start event for scalability
@@ -161,10 +204,30 @@ export const handleStopLiveLocationSharing = async (socket) => {
     const stoppedLocations = await LocationService.stopLiveLocationSharing(socket.user.id);
 
     if (stoppedLocations.length > 0) {
+      // Create a stop live location message in chat
+      const stopMessage = await ChatService.createMessage({
+        userId: socket.user.id,
+        username: socket.username,
+        content: 'Stopped sharing live location',
+        type: 'location',
+        location: {
+          latitude: stoppedLocations[0].latitude,
+          longitude: stoppedLocations[0].longitude,
+          accuracy: stoppedLocations[0].accuracy,
+          timestamp: new Date().toISOString(),
+          type: 'live',
+          isActive: false
+        }
+      });
+
       // Leave live location room
       socket.leave(`live_location_${socket.user.id}`);
 
-      // Emit live location stop to all users in the room
+      // Emit stop location message to all users (including sender)
+      socket.to('general').emit('new_message', stopMessage.toJSON());
+      socket.emit('message_sent', stopMessage.toJSON());
+
+      // Also emit dedicated live location stop event for map updates
       socket.to('general').emit('live_location_stopped', {
         userId: socket.user.id,
         stoppedBy: socket.username,
@@ -173,7 +236,8 @@ export const handleStopLiveLocationSharing = async (socket) => {
 
       // Send confirmation to sender
       socket.emit('live_location_stopped_success', {
-        stoppedLocations: stoppedLocations.map(loc => loc.toJSON())
+        stoppedLocations: stoppedLocations.map(loc => loc.toJSON()),
+        message: stopMessage.toJSON()
       });
 
       // Publish live location stop event for scalability

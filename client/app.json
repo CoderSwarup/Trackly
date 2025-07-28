@@ -26,6 +26,13 @@
     "plugins": [
       "expo-router",
       [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Lets Track to use your location to share with others in the chat.",
+          "locationWhenInUsePermission": "Allow Lets Track to use your location to share with others in the chat."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",

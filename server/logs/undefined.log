@@ -64885,3 +64885,1272 @@
     "timestamp": "2025-07-27T20:01:34.429Z",
     "meta": {}
 }
+{
+    "level": "INFO",
+    "message": "Client disconnected: wUIaqBbZmVQL5SnZAAAK",
+    "timestamp": "2025-07-27T20:05:38.552Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now offline",
+    "timestamp": "2025-07-27T20:05:39.322Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt disconnected",
+    "timestamp": "2025-07-27T20:05:39.379Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Client disconnected: xAQe82Pyc-kJWFpmAAAH",
+    "timestamp": "2025-07-27T20:06:10.713Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now offline",
+    "timestamp": "2025-07-27T20:06:11.529Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 disconnected",
+    "timestamp": "2025-07-27T20:06:11.612Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: mVoi9ZQhoVe4IhJWAAAN",
+    "timestamp": "2025-07-27T20:07:27.626Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T20:07:29.037Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::ffff:192.168.1.4",
+            "method": "GET",
+            "url": "/api/v1/chat/messages?limit=50"
+        },
+        "message": "The operation has been successful",
+        "data": {
+            "messages": [
+                {
+                    "id": "868457f4-55de-40ab-855b-3825f7074887",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjhj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:11.250Z",
+                    "location": null
+                },
+                {
+                    "id": "8d2e58c8-f719-4d2c-94e5-2d73c82cc9e7",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjh",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:14.609Z",
+                    "location": null
+                },
+                {
+                    "id": "bb980e3f-d3d2-4106-a4de-c81d9bf2cabb",
+                    "userId": "268469e5-b6b5-4534-a093-176d7ad14e0a",
+                    "username": "testt",
+                    "content": "ghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:30.238Z",
+                    "location": null
+                },
+                {
+                    "id": "6ae83653-9843-4232-8a22-16a1fef20fa8",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "ghjhgj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:35.026Z",
+                    "location": null
+                },
+                {
+                    "id": "4973c588-cd6a-4949-b74e-5abe5285b520",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "fgfffg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:14.246Z",
+                    "location": null
+                },
+                {
+                    "id": "fa2f8d6c-2740-418a-9493-54ce1a1c4d14",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "hi",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:31.484Z",
+                    "location": null
+                },
+                {
+                    "id": "f5fce205-2155-4718-aac5-2709147801ba",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "sss",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:34.207Z",
+                    "location": null
+                }
+            ],
+            "count": 7,
+            "limit": 50
+        }
+    }
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now online with socket mVoi9ZQhoVe4IhJWAAAN",
+    "timestamp": "2025-07-27T20:07:29.049Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 logged in with socket mVoi9ZQhoVe4IhJWAAAN",
+    "timestamp": "2025-07-27T20:07:29.247Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: 1WTdsvLNYLp2vSjlAAAQ",
+    "timestamp": "2025-07-27T20:07:46.874Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T20:07:48.620Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::ffff:192.168.1.4",
+            "method": "GET",
+            "url": "/api/v1/chat/messages?limit=50"
+        },
+        "message": "The operation has been successful",
+        "data": {
+            "messages": [
+                {
+                    "id": "868457f4-55de-40ab-855b-3825f7074887",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjhj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:11.250Z",
+                    "location": null
+                },
+                {
+                    "id": "8d2e58c8-f719-4d2c-94e5-2d73c82cc9e7",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjh",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:14.609Z",
+                    "location": null
+                },
+                {
+                    "id": "bb980e3f-d3d2-4106-a4de-c81d9bf2cabb",
+                    "userId": "268469e5-b6b5-4534-a093-176d7ad14e0a",
+                    "username": "testt",
+                    "content": "ghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:30.238Z",
+                    "location": null
+                },
+                {
+                    "id": "6ae83653-9843-4232-8a22-16a1fef20fa8",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "ghjhgj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:35.026Z",
+                    "location": null
+                },
+                {
+                    "id": "4973c588-cd6a-4949-b74e-5abe5285b520",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "fgfffg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:14.246Z",
+                    "location": null
+                },
+                {
+                    "id": "fa2f8d6c-2740-418a-9493-54ce1a1c4d14",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "hi",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:31.484Z",
+                    "location": null
+                },
+                {
+                    "id": "f5fce205-2155-4718-aac5-2709147801ba",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "sss",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:34.207Z",
+                    "location": null
+                }
+            ],
+            "count": 7,
+            "limit": 50
+        }
+    }
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket 1WTdsvLNYLp2vSjlAAAQ",
+    "timestamp": "2025-07-27T20:07:48.745Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket 1WTdsvLNYLp2vSjlAAAQ",
+    "timestamp": "2025-07-27T20:07:48.967Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Message sent by testt: text",
+    "timestamp": "2025-07-27T20:08:01.905Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Message sent by testt",
+    "timestamp": "2025-07-27T20:08:02.096Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Client disconnected: mVoi9ZQhoVe4IhJWAAAN",
+    "timestamp": "2025-07-27T20:31:55.269Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now offline",
+    "timestamp": "2025-07-27T20:31:56.337Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 disconnected",
+    "timestamp": "2025-07-27T20:31:56.424Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: rIpfm0IOlOwzZFJ_AAAT",
+    "timestamp": "2025-07-27T20:32:03.680Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now online with socket rIpfm0IOlOwzZFJ_AAAT",
+    "timestamp": "2025-07-27T20:32:05.349Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T20:32:05.588Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::ffff:192.168.1.4",
+            "method": "GET",
+            "url": "/api/v1/chat/messages?limit=50"
+        },
+        "message": "The operation has been successful",
+        "data": {
+            "messages": [
+                {
+                    "id": "868457f4-55de-40ab-855b-3825f7074887",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjhj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:11.250Z",
+                    "location": null
+                },
+                {
+                    "id": "8d2e58c8-f719-4d2c-94e5-2d73c82cc9e7",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjh",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:14.609Z",
+                    "location": null
+                },
+                {
+                    "id": "bb980e3f-d3d2-4106-a4de-c81d9bf2cabb",
+                    "userId": "268469e5-b6b5-4534-a093-176d7ad14e0a",
+                    "username": "testt",
+                    "content": "ghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:30.238Z",
+                    "location": null
+                },
+                {
+                    "id": "6ae83653-9843-4232-8a22-16a1fef20fa8",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "ghjhgj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:35.026Z",
+                    "location": null
+                },
+                {
+                    "id": "4973c588-cd6a-4949-b74e-5abe5285b520",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "fgfffg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:14.246Z",
+                    "location": null
+                },
+                {
+                    "id": "fa2f8d6c-2740-418a-9493-54ce1a1c4d14",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "hi",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:31.484Z",
+                    "location": null
+                },
+                {
+                    "id": "f5fce205-2155-4718-aac5-2709147801ba",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "sss",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:34.207Z",
+                    "location": null
+                },
+                {
+                    "id": "8e64a296-ec5f-44e8-97f8-a9d2e0ffa4f5",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "ghghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:08:01.748Z",
+                    "location": null
+                }
+            ],
+            "count": 8,
+            "limit": 50
+        }
+    }
+}
+{
+    "level": "INFO",
+    "message": "User test2 logged in with socket rIpfm0IOlOwzZFJ_AAAT",
+    "timestamp": "2025-07-27T20:32:05.849Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Message sent by test2: location",
+    "timestamp": "2025-07-27T20:32:23.566Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "One-time location shared by test2",
+    "timestamp": "2025-07-27T20:32:23.567Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "One-time location shared by test2",
+    "timestamp": "2025-07-27T20:32:23.666Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Client disconnected: 1WTdsvLNYLp2vSjlAAAQ",
+    "timestamp": "2025-07-27T20:32:34.244Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now offline",
+    "timestamp": "2025-07-27T20:32:35.178Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt disconnected",
+    "timestamp": "2025-07-27T20:32:35.230Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: VKQZ8eSCuy9uhSkWAAAW",
+    "timestamp": "2025-07-27T20:32:37.758Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T20:32:39.466Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::ffff:192.168.1.4",
+            "method": "GET",
+            "url": "/api/v1/chat/messages?limit=50"
+        },
+        "message": "The operation has been successful",
+        "data": {
+            "messages": [
+                {
+                    "id": "868457f4-55de-40ab-855b-3825f7074887",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjhj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:11.250Z",
+                    "location": null
+                },
+                {
+                    "id": "8d2e58c8-f719-4d2c-94e5-2d73c82cc9e7",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjh",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:14.609Z",
+                    "location": null
+                },
+                {
+                    "id": "bb980e3f-d3d2-4106-a4de-c81d9bf2cabb",
+                    "userId": "268469e5-b6b5-4534-a093-176d7ad14e0a",
+                    "username": "testt",
+                    "content": "ghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:30.238Z",
+                    "location": null
+                },
+                {
+                    "id": "6ae83653-9843-4232-8a22-16a1fef20fa8",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "ghjhgj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:35.026Z",
+                    "location": null
+                },
+                {
+                    "id": "4973c588-cd6a-4949-b74e-5abe5285b520",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "fgfffg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:14.246Z",
+                    "location": null
+                },
+                {
+                    "id": "fa2f8d6c-2740-418a-9493-54ce1a1c4d14",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "hi",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:31.484Z",
+                    "location": null
+                },
+                {
+                    "id": "f5fce205-2155-4718-aac5-2709147801ba",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "sss",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:34.207Z",
+                    "location": null
+                },
+                {
+                    "id": "8e64a296-ec5f-44e8-97f8-a9d2e0ffa4f5",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "ghghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:08:01.748Z",
+                    "location": null
+                },
+                {
+                    "id": "7d42f3eb-8c7d-44ef-977d-95686280aa21",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "test2 shared location",
+                    "type": "location",
+                    "timestamp": "2025-07-27T20:32:23.269Z",
+                    "location": {
+                        "latitude": 15.727878,
+                        "longitude": 74.030458,
+                        "accuracy": 213,
+                        "type": "one_time",
+                        "timestamp": "2025-07-27T20:32:23.266Z"
+                    }
+                }
+            ],
+            "count": 9,
+            "limit": 50
+        }
+    }
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket VKQZ8eSCuy9uhSkWAAAW",
+    "timestamp": "2025-07-27T20:32:39.525Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket VKQZ8eSCuy9uhSkWAAAW",
+    "timestamp": "2025-07-27T20:32:39.738Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Message sent by test2: location",
+    "timestamp": "2025-07-27T20:33:13.426Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "One-time location shared by test2",
+    "timestamp": "2025-07-27T20:33:13.427Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "One-time location shared by test2",
+    "timestamp": "2025-07-27T20:33:13.480Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Message sent by test2: location",
+    "timestamp": "2025-07-27T20:33:26.024Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Live location sharing started by test2",
+    "timestamp": "2025-07-27T20:33:26.024Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Live location sharing started by test2",
+    "timestamp": "2025-07-27T20:33:26.076Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Client disconnected: VKQZ8eSCuy9uhSkWAAAW",
+    "timestamp": "2025-07-27T20:33:34.886Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now offline",
+    "timestamp": "2025-07-27T20:33:35.943Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt disconnected",
+    "timestamp": "2025-07-27T20:33:35.996Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: 0CgZ3OwQHgBFx5u_AAAZ",
+    "timestamp": "2025-07-27T20:33:40.957Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket 0CgZ3OwQHgBFx5u_AAAZ",
+    "timestamp": "2025-07-27T20:33:42.601Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "CONTROLLER_RESPONSE",
+    "timestamp": "2025-07-27T20:33:42.748Z",
+    "meta": {
+        "success": true,
+        "statusCode": 200,
+        "request": {
+            "ip": "::ffff:192.168.1.4",
+            "method": "GET",
+            "url": "/api/v1/chat/messages?limit=50"
+        },
+        "message": "The operation has been successful",
+        "data": {
+            "messages": [
+                {
+                    "id": "868457f4-55de-40ab-855b-3825f7074887",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjhj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:11.250Z",
+                    "location": null
+                },
+                {
+                    "id": "8d2e58c8-f719-4d2c-94e5-2d73c82cc9e7",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "hjh",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:14.609Z",
+                    "location": null
+                },
+                {
+                    "id": "bb980e3f-d3d2-4106-a4de-c81d9bf2cabb",
+                    "userId": "268469e5-b6b5-4534-a093-176d7ad14e0a",
+                    "username": "testt",
+                    "content": "ghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:30.238Z",
+                    "location": null
+                },
+                {
+                    "id": "6ae83653-9843-4232-8a22-16a1fef20fa8",
+                    "userId": "4150f9fb-95cc-46fc-a967-d5619b0aa31c",
+                    "username": "test2",
+                    "content": "ghjhgj",
+                    "type": "text",
+                    "timestamp": "2025-07-27T19:54:35.026Z",
+                    "location": null
+                },
+                {
+                    "id": "4973c588-cd6a-4949-b74e-5abe5285b520",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "fgfffg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:14.246Z",
+                    "location": null
+                },
+                {
+                    "id": "fa2f8d6c-2740-418a-9493-54ce1a1c4d14",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "hi",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:31.484Z",
+                    "location": null
+                },
+                {
+                    "id": "f5fce205-2155-4718-aac5-2709147801ba",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "sss",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:01:34.207Z",
+                    "location": null
+                },
+                {
+                    "id": "8e64a296-ec5f-44e8-97f8-a9d2e0ffa4f5",
+                    "userId": "54398b12-2386-4fef-a46c-bbde228527b3",
+                    "username": "testt",
+                    "content": "ghghg",
+                    "type": "text",
+                    "timestamp": "2025-07-27T20:08:01.748Z",
+                    "location": null
+                },
+                {
+                    "id": "7d42f3eb-8c7d-44ef-977d-95686280aa21",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "test2 shared location",
+                    "type": "location",
+                    "timestamp": "2025-07-27T20:32:23.269Z",
+                    "location": {
+                        "latitude": 15.727878,
+                        "longitude": 74.030458,
+                        "accuracy": 213,
+                        "type": "one_time",
+                        "timestamp": "2025-07-27T20:32:23.266Z"
+                    }
+                },
+                {
+                    "id": "ad4e011f-c41d-4559-a11d-795dc8e2560e",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "test2 shared location",
+                    "type": "location",
+                    "timestamp": "2025-07-27T20:33:13.271Z",
+                    "location": {
+                        "latitude": 15.727878,
+                        "longitude": 74.030458,
+                        "accuracy": 213,
+                        "type": "one_time",
+                        "timestamp": "2025-07-27T20:33:13.270Z"
+                    }
+                },
+                {
+                    "id": "84daea52-6076-4feb-8be4-bddb20387d3e",
+                    "userId": "5321545c-e900-4b3a-9e6a-c21843064c3a",
+                    "username": "test2",
+                    "content": "test2 is sharing live location",
+                    "type": "location",
+                    "timestamp": "2025-07-27T20:33:25.864Z",
+                    "location": {
+                        "latitude": 15.727878,
+                        "longitude": 74.030458,
+                        "accuracy": 213,
+                        "type": "live",
+                        "timestamp": "2025-07-27T20:33:25.864Z"
+                    }
+                }
+            ],
+            "count": 11,
+            "limit": 50
+        }
+    }
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket 0CgZ3OwQHgBFx5u_AAAZ",
+    "timestamp": "2025-07-27T20:33:42.955Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Live location sharing stopped for user 5321545c-e900-4b3a-9e6a-c21843064c3a",
+    "timestamp": "2025-07-27T20:39:10.754Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Live location sharing stopped by test2",
+    "timestamp": "2025-07-27T20:39:10.816Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis pub/sub channels set up for Socket.io scaling",
+    "timestamp": "2025-07-27T20:39:27.566Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis publisher connected",
+    "timestamp": "2025-07-27T20:39:27.853Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis subscriber connected",
+    "timestamp": "2025-07-27T20:39:27.859Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis client connected",
+    "timestamp": "2025-07-27T20:39:27.863Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: chat:message",
+    "timestamp": "2025-07-27T20:39:27.923Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:joined",
+    "timestamp": "2025-07-27T20:39:27.925Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:left",
+    "timestamp": "2025-07-27T20:39:27.927Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:shared",
+    "timestamp": "2025-07-27T20:39:27.928Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_update",
+    "timestamp": "2025-07-27T20:39:27.929Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_stopped",
+    "timestamp": "2025-07-27T20:39:27.930Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "All Redis connections established",
+    "timestamp": "2025-07-27T20:39:27.931Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T20:39:27.932Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T20:39:27.937Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "New client connected: 69tceUDnx9Q8OXJhAAAB",
+    "timestamp": "2025-07-27T20:39:28.179Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now online with socket 69tceUDnx9Q8OXJhAAAB",
+    "timestamp": "2025-07-27T20:39:28.834Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 logged in with socket 69tceUDnx9Q8OXJhAAAB",
+    "timestamp": "2025-07-27T20:39:29.043Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: 5Xqz0guSoAPkM4JqAAAE",
+    "timestamp": "2025-07-27T20:39:30.139Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket 5Xqz0guSoAPkM4JqAAAE",
+    "timestamp": "2025-07-27T20:39:30.824Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket 5Xqz0guSoAPkM4JqAAAE",
+    "timestamp": "2025-07-27T20:39:31.037Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis pub/sub channels set up for Socket.io scaling",
+    "timestamp": "2025-07-27T20:39:41.803Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis client connected",
+    "timestamp": "2025-07-27T20:39:41.978Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis publisher connected",
+    "timestamp": "2025-07-27T20:39:42.041Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis subscriber connected",
+    "timestamp": "2025-07-27T20:39:42.047Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: chat:message",
+    "timestamp": "2025-07-27T20:39:42.103Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "All Redis connections established",
+    "timestamp": "2025-07-27T20:39:42.104Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T20:39:42.105Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T20:39:42.109Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:joined",
+    "timestamp": "2025-07-27T20:39:42.111Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:left",
+    "timestamp": "2025-07-27T20:39:42.112Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:shared",
+    "timestamp": "2025-07-27T20:39:42.113Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_update",
+    "timestamp": "2025-07-27T20:39:42.113Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_stopped",
+    "timestamp": "2025-07-27T20:39:42.114Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: AByc3S8Ebsz5Gq3WAAAB",
+    "timestamp": "2025-07-27T20:39:43.205Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket AByc3S8Ebsz5Gq3WAAAB",
+    "timestamp": "2025-07-27T20:39:43.776Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket AByc3S8Ebsz5Gq3WAAAB",
+    "timestamp": "2025-07-27T20:39:43.886Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: 0vym7MQv7Bj2OBCaAAAE",
+    "timestamp": "2025-07-27T20:39:45.381Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now online with socket 0vym7MQv7Bj2OBCaAAAE",
+    "timestamp": "2025-07-27T20:39:46.655Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 logged in with socket 0vym7MQv7Bj2OBCaAAAE",
+    "timestamp": "2025-07-27T20:39:46.788Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis pub/sub channels set up for Socket.io scaling",
+    "timestamp": "2025-07-27T20:40:00.047Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis subscriber connected",
+    "timestamp": "2025-07-27T20:40:00.209Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: chat:message",
+    "timestamp": "2025-07-27T20:40:00.275Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:joined",
+    "timestamp": "2025-07-27T20:40:00.277Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:left",
+    "timestamp": "2025-07-27T20:40:00.277Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:shared",
+    "timestamp": "2025-07-27T20:40:00.278Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_update",
+    "timestamp": "2025-07-27T20:40:00.279Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_stopped",
+    "timestamp": "2025-07-27T20:40:00.280Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis client connected",
+    "timestamp": "2025-07-27T20:40:00.284Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis publisher connected",
+    "timestamp": "2025-07-27T20:40:00.288Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "All Redis connections established",
+    "timestamp": "2025-07-27T20:40:00.353Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T20:40:00.353Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T20:40:00.357Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "New client connected: NH_zkW91ErPqFPEBAAAB",
+    "timestamp": "2025-07-27T20:40:00.399Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket NH_zkW91ErPqFPEBAAAB",
+    "timestamp": "2025-07-27T20:40:01.090Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: cgCfPMGszjYzXLpRAAAE",
+    "timestamp": "2025-07-27T20:40:01.130Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket NH_zkW91ErPqFPEBAAAB",
+    "timestamp": "2025-07-27T20:40:01.532Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now online with socket cgCfPMGszjYzXLpRAAAE",
+    "timestamp": "2025-07-27T20:40:01.999Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 logged in with socket cgCfPMGszjYzXLpRAAAE",
+    "timestamp": "2025-07-27T20:40:02.359Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis pub/sub channels set up for Socket.io scaling",
+    "timestamp": "2025-07-27T20:40:09.999Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis client connected",
+    "timestamp": "2025-07-27T20:40:10.125Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis publisher connected",
+    "timestamp": "2025-07-27T20:40:10.133Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis subscriber connected",
+    "timestamp": "2025-07-27T20:40:10.316Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: chat:message",
+    "timestamp": "2025-07-27T20:40:10.400Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "All Redis connections established",
+    "timestamp": "2025-07-27T20:40:10.401Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Redis Connection Initialize Successfully",
+    "timestamp": "2025-07-27T20:40:10.401Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "APPLICATION_STARTED",
+    "timestamp": "2025-07-27T20:40:10.406Z",
+    "meta": {
+        "PORT": 5000,
+        "SERVER_URL": "http://localhost:5000/api/v1"
+    }
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:joined",
+    "timestamp": "2025-07-27T20:40:10.407Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: user:left",
+    "timestamp": "2025-07-27T20:40:10.408Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:shared",
+    "timestamp": "2025-07-27T20:40:10.409Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_update",
+    "timestamp": "2025-07-27T20:40:10.410Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Subscribed to channel: location:live_stopped",
+    "timestamp": "2025-07-27T20:40:10.411Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: R6hFg9yEYpDCijGPAAAC",
+    "timestamp": "2025-07-27T20:40:10.646Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "New client connected: f1iyYjbr5EdOEaHzAAAE",
+    "timestamp": "2025-07-27T20:40:10.653Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now online with socket R6hFg9yEYpDCijGPAAAC",
+    "timestamp": "2025-07-27T20:40:11.554Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now online with socket f1iyYjbr5EdOEaHzAAAE",
+    "timestamp": "2025-07-27T20:40:11.609Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 logged in with socket R6hFg9yEYpDCijGPAAAC",
+    "timestamp": "2025-07-27T20:40:11.713Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt logged in with socket f1iyYjbr5EdOEaHzAAAE",
+    "timestamp": "2025-07-27T20:40:11.799Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Client disconnected: R6hFg9yEYpDCijGPAAAC",
+    "timestamp": "2025-07-27T20:52:43.622Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 is now offline",
+    "timestamp": "2025-07-27T20:52:45.095Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User test2 disconnected",
+    "timestamp": "2025-07-27T20:52:45.224Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "Client disconnected: f1iyYjbr5EdOEaHzAAAE",
+    "timestamp": "2025-07-27T20:56:52.741Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt is now offline",
+    "timestamp": "2025-07-27T20:56:53.781Z",
+    "meta": {}
+}
+{
+    "level": "INFO",
+    "message": "User testt disconnected",
+    "timestamp": "2025-07-27T20:56:53.804Z",
+    "meta": {}
+}

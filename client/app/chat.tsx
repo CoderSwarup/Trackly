@@ -22,8 +22,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { SocketProvider, useSocket } from "@/contexts/SocketContext";
 import { apiCall, API_ENDPOINTS } from "@/config/api";
+import { LocationActionSheet } from "@/components/LocationActionSheet";
+import { LocationPicker } from "@/components/LocationPicker";
+import { LocationMessage } from "@/components/LocationMessage";
+import { LiveLocationMap } from "@/components/LiveLocationMap";
+import * as Location from "expo-location";
 
 const { width } = Dimensions.get("window");
+
+interface LocationData {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  timestamp: string;
+  type: "one_time" | "live";
+  isActive?: boolean;
+}
 
 interface Message {
   id: string;
@@ -32,6 +46,7 @@ interface Message {
   content: string;
   type: string;
   timestamp: string;
+  location?: LocationData;
 }
 
 function ChatContent() {
@@ -45,9 +60,27 @@ function ChatContent() {
   const [messageText, setMessageText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
-  const { messages, sendMessage, onlineUsers, isConnected, isAuthenticated } =
-    useSocket();
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [showLiveLocationMap, setShowLiveLocationMap] = useState(false);
+  const [isLiveLocationMode, setIsLiveLocationMode] = useState(false);
+  const {
+    messages,
+    sendMessage,
+    onlineUsers,
+    isConnected,
+    isAuthenticated,
+    shareLocation,
+    startLiveLocation,
+    updateLiveLocation,
+    stopLiveLocation,
+    liveLocations,
+    isLiveLocationActive,
+  } = useSocket();
   const flatListRef = useRef<FlatList>(null);
+  const liveLocationInterval = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
 
   useEffect(() => {
     loadRecentMessages();
@@ -85,11 +118,110 @@ function ChatContent() {
     setShowMenu(false);
 
     try {
+      // Stop live location if active
+      if (isLiveLocationActive) {
+        stopLiveLocation();
+        if (liveLocationInterval.current) {
+          clearInterval(liveLocationInterval.current);
+        }
+      }
       await logout();
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
+
+  const handleLocationMenuPress = () => {
+    setShowLocationSheet(true);
+  };
+
+  const handleShareLocation = () => {
+    setShowLocationSheet(false);
+    setIsLiveLocationMode(false);
+    setShowLocationPicker(true);
+  };
+
+  const handleShareLiveLocation = () => {
+    setShowLocationSheet(false);
+    setIsLiveLocationMode(true);
+    setShowLocationPicker(true);
+  };
+
+  const handleLocationSelect = async (location: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  }) => {
+    setShowLocationPicker(false);
+
+    try {
+      if (isLiveLocationMode) {
+        // Start live location sharing
+        startLiveLocation(
+          location.latitude,
+          location.longitude,
+          location.accuracy
+        );
+
+        // Set up periodic location updates every 30 seconds
+        liveLocationInterval.current = setInterval(async () => {
+          try {
+            const currentLocation = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.High,
+            });
+            updateLiveLocation(
+              currentLocation.coords.latitude,
+              currentLocation.coords.longitude,
+              currentLocation.coords.accuracy || undefined
+            );
+          } catch (error) {
+            console.error("Failed to update live location:", error);
+          }
+        }, 30000); // Update every 30 seconds
+
+        Toast.show({
+          type: "success",
+          text1: "Live location started",
+          text2: "Your location will be shared for 1 hour",
+        });
+      } else {
+        // Share one-time location
+        shareLocation(location.latitude, location.longitude, location.accuracy);
+        Toast.show({
+          type: "success",
+          text1: "Location shared",
+          text2: "Your current location has been sent",
+        });
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to share location. Please try again.");
+      console.error("Location sharing error:", error);
+    }
+  };
+
+  const handleStopLiveLocation = () => {
+    if (isLiveLocationActive) {
+      stopLiveLocation();
+      if (liveLocationInterval.current) {
+        clearInterval(liveLocationInterval.current);
+        liveLocationInterval.current = null;
+      }
+      Toast.show({
+        type: "info",
+        text1: "Live location stopped",
+        text2: "Location sharing has been disabled",
+      });
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (liveLocationInterval.current) {
+        clearInterval(liveLocationInterval.current);
+      }
+    };
+  }, []);
 
   const renderMessage = ({ item, index }: { item: Message; index: number }) => {
     const isOwnMessage = item.userId === user?.id;
@@ -106,6 +238,45 @@ function ChatContent() {
 
     const styles = createStyles(theme);
 
+    // If this is a location message, render LocationMessage component
+    if (item.type === "location" && item.location) {
+      return (
+        <>
+          {showDateSeparator && (
+            <View style={styles.dateSeparatorContainer}>
+              <View style={styles.dateSeparator}>
+                <Text style={styles.dateSeparatorText}>
+                  {new Date(item.timestamp).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </Text>
+              </View>
+            </View>
+          )}
+          <View
+            style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}
+          >
+            {!isOwnMessage && (
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>
+                  {item.username.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            )}
+            <LocationMessage
+              location={item.location}
+              username={item.username}
+              timestamp={item.timestamp}
+              isOwn={isOwnMessage}
+            />
+          </View>
+        </>
+      );
+    }
+
+    // Regular text message
     return (
       <>
         {showDateSeparator && (
@@ -222,6 +393,20 @@ function ChatContent() {
             </View>
           </View>
           <View style={styles.headerRight}>
+            {/* Live Location Map Button */}
+            <TouchableOpacity
+              onPress={() => setShowLiveLocationMap(true)}
+              style={styles.headerButton}
+            >
+              <Ionicons name="map" size={20} color="#fff" />
+              {liveLocations.length > 0 && (
+                <View style={styles.liveLocationBadge}>
+                  <Text style={styles.liveLocationBadgeText}>
+                    {liveLocations.length}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
             <TouchableOpacity onPress={toggleTheme} style={styles.headerButton}>
               <Ionicons
                 name={theme.isDark ? "sunny" : "moon"}
@@ -254,6 +439,23 @@ function ChatContent() {
       {/* Input Area */}
       <View style={styles.inputContainer}>
         <View style={styles.inputRow}>
+          <TouchableOpacity
+            style={styles.locationButton}
+            onPress={handleLocationMenuPress}
+            disabled={!isConnected || !isAuthenticated}
+          >
+            <Ionicons
+              name="location"
+              size={20}
+              color={
+                isConnected && isAuthenticated
+                  ? theme.isDark
+                    ? "#00a884"
+                    : "#128c7e"
+                  : "#999"
+              }
+            />
+          </TouchableOpacity>
           <View style={styles.textInputContainer}>
             <TextInput
               style={styles.textInput}
@@ -285,6 +487,19 @@ function ChatContent() {
             <Ionicons name="send" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
+
+        {/* Live Location Status */}
+        {isLiveLocationActive && (
+          <View style={styles.liveLocationStatus}>
+            <View style={styles.liveLocationIndicator}>
+              <Ionicons name="radio-button-on" size={12} color="#4CAF50" />
+              <Text style={styles.liveLocationText}>Live location is on</Text>
+            </View>
+            <TouchableOpacity onPress={handleStopLiveLocation}>
+              <Text style={styles.stopLiveLocationText}>Stop</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {/* Menu Modal */}
@@ -316,6 +531,36 @@ function ChatContent() {
           </View>
         </Pressable>
       </Modal>
+
+      {/* Location Action Sheet */}
+      <LocationActionSheet
+        visible={showLocationSheet}
+        onClose={() => setShowLocationSheet(false)}
+        onShareLocation={handleShareLocation}
+        onShareLiveLocation={handleShareLiveLocation}
+      />
+
+      {/* Location Picker Modal */}
+      <Modal
+        visible={showLocationPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowLocationPicker(false)}
+      >
+        <View style={styles.locationPickerOverlay}>
+          <LocationPicker
+            onLocationSelect={handleLocationSelect}
+            onCancel={() => setShowLocationPicker(false)}
+            isLiveMode={isLiveLocationMode}
+          />
+        </View>
+      </Modal>
+
+      {/* Live Location Map */}
+      <LiveLocationMap
+        visible={showLiveLocationMap}
+        onClose={() => setShowLiveLocationMap(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -655,6 +900,64 @@ const createStyles = (theme: any) =>
       backgroundColor: theme.isDark
         ? "rgba(0, 168, 132, 0.6)"
         : "rgba(18, 140, 126, 0.6)",
+    },
+    locationButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 8,
+    },
+    liveLocationStatus: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: theme.isDark ? "#2a2f32" : "#fff",
+      marginTop: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: "#4CAF50",
+    },
+    liveLocationIndicator: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    liveLocationText: {
+      color: theme.isDark ? "#e9edef" : "#2c3e50",
+      fontSize: 14,
+      marginLeft: 6,
+      fontWeight: "500",
+    },
+    stopLiveLocationText: {
+      color: "#FF5722",
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    locationPickerOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      justifyContent: "flex-end",
+    },
+    liveLocationBadge: {
+      position: "absolute",
+      top: -2,
+      right: -2,
+      backgroundColor: "#4CAF50",
+      borderRadius: 10,
+      minWidth: 20,
+      height: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      borderWidth: 2,
+      borderColor: "#fff",
+    },
+    liveLocationBadgeText: {
+      color: "#fff",
+      fontSize: 11,
+      fontWeight: "600",
     },
     // Menu Modal Styles
     modalOverlay: {
