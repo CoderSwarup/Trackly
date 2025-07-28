@@ -1,7 +1,5 @@
-import { API_BASE_URL as ENV_API_BASE_URL, SOCKET_URL as ENV_SOCKET_URL } from '@env';
-
-export const API_BASE_URL = ENV_API_BASE_URL;
-export const SOCKET_URL = ENV_SOCKET_URL;
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+export const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL;
 
 // API endpoints
 export const API_ENDPOINTS = {
