@@ -9,10 +9,12 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  ScrollView,
 } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSocket } from "@/contexts/SocketContext";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Conditional import for react-native-maps (only on native platforms)
 let MapView: any = null;
@@ -53,9 +55,13 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
 }) => {
   const { theme } = useTheme();
   const { liveLocations, isLiveLocationActive } = useSocket();
+  const insets = useSafeAreaInsets();
   const mapRef = useRef<any>(null);
   const [markers, setMarkers] = useState<LiveLocationMarker[]>([]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [mapType, setMapType] = useState<'standard' | 'satellite' | 'hybrid' | 'terrain'>('standard');
+  const [showTraffic, setShowTraffic] = useState(true);
+  const [followUser, setFollowUser] = useState(false);
 
   useEffect(() => {
     if (visible && liveLocations.length > 0) {
@@ -125,35 +131,8 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
     return isActive ? "#4CAF50" : "#FF9800";
   };
 
-  const mapStyle = theme.isDark
-    ? [
-        {
-          featureType: "all",
-          elementType: "geometry",
-          stylers: [{ color: "#242f3e" }],
-        },
-        {
-          featureType: "all",
-          elementType: "labels.text.stroke",
-          stylers: [{ lightness: -80 }],
-        },
-        {
-          featureType: "administrative",
-          elementType: "labels.text.fill",
-          stylers: [{ color: "#746855" }],
-        },
-        {
-          featureType: "road",
-          elementType: "geometry.fill",
-          stylers: [{ color: "#2b3544" }],
-        },
-        {
-          featureType: "water",
-          elementType: "geometry",
-          stylers: [{ color: "#17263c" }],
-        },
-      ]
-    : undefined;
+  // Use default Google Maps styling for better road visibility
+  const mapStyle = undefined;
 
   return (
     <Modal
@@ -161,13 +140,14 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
       animationType="slide"
       presentationStyle="fullScreen"
       onRequestClose={onClose}
+      statusBarTranslucent={false}
     >
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         <StatusBar barStyle={theme.isDark ? "light-content" : "dark-content"} />
 
-        {/* Header */}
+        {/* Enhanced Header */}
         <View
           style={[
             styles.header,
@@ -178,16 +158,22 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
           ]}
         >
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <IconSymbol name="arrow.left" size={24} color={theme.colors.text} />
+            <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
             Live Locations
           </Text>
           <View style={styles.headerRight}>
+            <TouchableOpacity 
+              onPress={() => setMapType(mapType === 'standard' ? 'satellite' : 'standard')}
+              style={styles.headerButton}
+            >
+              <Ionicons name="layers-outline" size={20} color={theme.colors.text} />
+            </TouchableOpacity>
             <View
               style={[styles.liveIndicator, { backgroundColor: "#4CAF50" }]}
             >
-              <IconSymbol name="circle.fill" size={8} color="white" />
+              <Ionicons name="radio-button-on" size={8} color="white" />
               <Text style={styles.liveText}>
                 {markers.filter((m) => m.isActive).length}
               </Text>
@@ -195,8 +181,41 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
           </View>
         </View>
 
+        {/* Map Controls Overlay */}
+        <View style={styles.mapControlsOverlay} pointerEvents="box-none">
+          <View style={styles.mapControls} pointerEvents="box-none">
+            <TouchableOpacity 
+              style={[styles.controlButton, { backgroundColor: theme.colors.background }]}
+              onPress={() => setShowTraffic(!showTraffic)}
+            >
+              <Ionicons 
+                name={showTraffic ? "car" : "car-outline"} 
+                size={18} 
+                color={showTraffic ? "#128c7e" : theme.colors.textSecondary} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.controlButton, { backgroundColor: theme.colors.background }]}
+              onPress={() => {
+                if (markers.length > 0 && mapRef.current) {
+                  const coordinates = markers.map((marker) => ({
+                    latitude: marker.latitude,
+                    longitude: marker.longitude,
+                  }));
+                  mapRef.current.fitToCoordinates(coordinates, {
+                    edgePadding: { top: 100, right: 50, bottom: 200, left: 50 },
+                    animated: true,
+                  });
+                }
+              }}
+            >
+              <Ionicons name="resize-outline" size={18} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Map */}
-        <View style={styles.mapContainer}>
+        <View style={styles.mapContainer} pointerEvents="box-none">
           {Platform.OS === "web" ? (
             <View
               style={[
@@ -204,8 +223,8 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
                 { backgroundColor: theme.colors.surface },
               ]}
             >
-              <IconSymbol
-                name="map"
+              <Ionicons
+                name="map-outline"
                 size={64}
                 color={theme.colors.textSecondary}
               />
@@ -260,18 +279,30 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
               ref={mapRef}
               provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
               style={styles.map}
-              customMapStyle={mapStyle}
+              // Essential gestures only
+              scrollEnabled={true}
+              zoomEnabled={true}
+              rotateEnabled={true}
+              pitchEnabled={true}
+              // Map configuration
+              mapType={mapType}
               showsUserLocation={true}
-              showsMyLocationButton={true}
-              mapType="standard"
-              showsPointsOfInterest={false}
-              showsCompass={true}
-              showsScale={true}
+              showsMyLocationButton={false}
+              showsCompass={false}
+              showsScale={false}
+              showsBuildings={true}
+              showsTraffic={showTraffic}
+              showsPointsOfInterest={true}
+              loadingEnabled={false}
+              toolbarEnabled={false}
+              moveOnMarkerPress={false}
+              minZoomLevel={3}
+              maxZoomLevel={20}
               initialRegion={{
                 latitude: markers[0]?.latitude || 37.78825,
                 longitude: markers[0]?.longitude || -122.4324,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
               }}
             >
               {markers.map((marker) => (
@@ -296,7 +327,7 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
                       },
                     ]}
                   >
-                    <IconSymbol name="location.fill" size={18} color="white" />
+                    <Ionicons name="location" size={18} color="white" />
                     {marker.isActive && (
                       <>
                         <View style={styles.liveIndicatorMarker}>
@@ -339,8 +370,8 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
                 { backgroundColor: theme.colors.surface },
               ]}
             >
-              <IconSymbol
-                name="location"
+              <Ionicons
+                name="location-outline"
                 size={48}
                 color={theme.colors.textSecondary}
               />
@@ -362,7 +393,7 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
           )}
         </View>
 
-        {/* Bottom Panel - User List */}
+        {/* Enhanced Bottom Panel - User List */}
         {markers.length > 0 && (
           <View
             style={[
@@ -370,12 +401,24 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
               {
                 backgroundColor: theme.colors.background,
                 borderTopColor: theme.colors.border,
+                paddingBottom: Math.max(insets.bottom, 16),
+                maxHeight: height * 0.4,
               },
             ]}
           >
+            <View style={styles.bottomPanelHandle}>
+              <View style={[styles.panelHandle, { backgroundColor: theme.colors.border }]} />
+            </View>
+            
             <Text style={[styles.bottomTitle, { color: theme.colors.text }]}>
               Active Locations ({markers.length})
             </Text>
+            
+            <ScrollView
+              style={styles.userList}
+              showsVerticalScrollIndicator={false}
+              bounces={true}
+            >
             {markers.map((marker) => (
               <TouchableOpacity
                 key={marker.userId}
@@ -448,6 +491,7 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
                 />
               </TouchableOpacity>
             ))}
+            </ScrollView>
           </View>
         )}
 
@@ -456,7 +500,7 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
           <View
             style={[styles.myLocationStatus, { backgroundColor: "#4CAF50" }]}
           >
-            <IconSymbol name="location.fill" size={16} color="white" />
+            <Ionicons name="location" size={16} color="white" />
             <Text style={styles.myLocationText}>
               You are sharing your live location
             </Text>
@@ -577,23 +621,42 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   bottomPanel: {
-    maxHeight: height * 0.4,
     borderTopWidth: 1,
-    paddingTop: 16,
+    paddingTop: 8,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  bottomPanelHandle: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  panelHandle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
   },
   bottomTitle: {
     fontSize: 18,
-    fontWeight: "600",
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    fontWeight: "700",
+    paddingHorizontal: 20,
+    marginBottom: 16,
+    letterSpacing: -0.3,
   },
   userItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     borderBottomWidth: 1,
+    marginHorizontal: 4,
+    borderRadius: 12,
+    marginBottom: 4,
   },
   userInfo: {
     flexDirection: "row",
@@ -635,15 +698,20 @@ const styles = StyleSheet.create({
   },
   myLocationStatus: {
     position: "absolute",
-    top: 80,
+    top: 120,
     left: 16,
     right: 16,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
     gap: 8,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   myLocationText: {
     color: "white",
@@ -681,5 +749,40 @@ const styles = StyleSheet.create({
   webLocationItem: {
     fontSize: 14,
     marginBottom: 4,
+  },
+  scrollContainer: {
+    maxHeight: 80,
+  },
+  userList: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  headerButton: {
+    padding: 8,
+    marginRight: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+  mapControlsOverlay: {
+    position: 'absolute',
+    top: 80,
+    right: 16,
+    zIndex: 1000,
+  },
+  mapControls: {
+    flexDirection: 'column',
+    gap: 8,
+  },
+  controlButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });

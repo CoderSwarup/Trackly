@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface LocationActionSheetProps {
   visible: boolean;
@@ -17,6 +18,7 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
   onShareLiveLocation,
 }) => {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const styles = StyleSheet.create({
     overlay: {
@@ -28,7 +30,9 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
       backgroundColor: theme.colors.background,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      paddingBottom: 34, // Safe area bottom
+      paddingBottom: Math.max(insets.bottom + 20, 40),
+      maxHeight: '60%',
+      minHeight: 280,
     },
     header: {
       flexDirection: 'row',
@@ -49,8 +53,9 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
       flexDirection: 'row',
       alignItems: 'center',
       padding: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      marginBottom: 8,
+      borderRadius: 12,
+      marginHorizontal: 16,
     },
     optionIcon: {
       width: 40,
@@ -81,21 +86,38 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
     liveLocationIcon: {
       backgroundColor: theme.colors.primary + '30',
     },
+    cancelButton: {
+      marginTop: 16,
+      marginHorizontal: 16,
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      elevation: 1,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    cancelButtonText: {
+      fontSize: 16,
+      fontWeight: '600',
+    },
   });
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
+      statusBarTranslucent={false}
     >
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
-        <View style={styles.container}>
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable style={styles.container} onPress={() => {}}>
           <View style={styles.header}>
             <Text style={styles.title}>Share Location</Text>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <IconSymbol name="xmark" size={20} color={theme.colors.textSecondary} />
+              <Ionicons name="close" size={20} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -105,7 +127,7 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
             activeOpacity={0.7}
           >
             <View style={styles.optionIcon}>
-              <IconSymbol name="location" size={20} color={theme.colors.primary} />
+              <Ionicons name="location-outline" size={20} color={theme.colors.primary} />
             </View>
             <View style={styles.optionContent}>
               <Text style={styles.optionTitle}>Share Current Location</Text>
@@ -121,7 +143,7 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
             activeOpacity={0.7}
           >
             <View style={[styles.optionIcon, styles.liveLocationIcon]}>
-              <IconSymbol name="location.fill" size={20} color={theme.colors.primary} />
+              <Ionicons name="location" size={20} color={theme.colors.primary} />
             </View>
             <View style={styles.optionContent}>
               <Text style={styles.optionTitle}>Share Live Location</Text>
@@ -130,8 +152,19 @@ export const LocationActionSheet: React.FC<LocationActionSheetProps> = ({
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
+          
+          {/* Cancel Button */}
+          <TouchableOpacity 
+            style={[styles.cancelButton, { backgroundColor: theme.colors.surface }]}
+            onPress={onClose}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.cancelButtonText, { color: theme.colors.text }]}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };

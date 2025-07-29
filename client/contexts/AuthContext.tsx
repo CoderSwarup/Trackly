@@ -83,6 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('authData');
+      // Batch state updates using React's automatic batching
       setUser(null);
       setToken(null);
     } catch (error) {

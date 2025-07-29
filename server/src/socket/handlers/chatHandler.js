@@ -6,15 +6,12 @@ import logger from '../../utils/logger.js';
 
 export const handleSendMessage = async (socket, data) => {
   try {
-    console.log("J", socket.handshake.query);
     if (!socket.user || !socket.username) {
       socket.emit('message_error', {
         message: 'User not authenticated'
       });
       return;
     }
-    console.log("SOCKET", socket);
-
 
     const validatedData = validateSocketData(sendMessageSchema, data);
     const { content, type = 'text' } = validatedData;
@@ -26,14 +23,19 @@ export const handleSendMessage = async (socket, data) => {
       type
     );
 
-    // Emit message to all users in the room (including sender) via Redis pub/sub
-    // This will handle both sender and other users
+    const messageData = message.toJSON();
+
+    // IMMEDIATE delivery to all users in the room including sender
+    socket.to('general').emit('new_message', messageData);
+    socket.emit('new_message', messageData);
+
+    // Also publish to Redis for scaling (backup/other instances)
     await publishMessage(CHANNELS.CHAT_MESSAGE, {
-      message: message.toJSON(),
+      message: messageData,
       room: 'general'
     });
 
-    logger.info(`Message sent by ${socket.username}`);
+    logger.info(`Message sent by ${socket.username} - delivered immediately`);
   } catch (error) {
     logger.error('Send message error:', error.message);
     socket.emit('message_error', {

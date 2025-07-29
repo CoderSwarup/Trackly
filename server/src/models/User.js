@@ -20,7 +20,7 @@ export class User {
     try {
       const userData = await client.hGetAll(`${USER_PREFIX}${username}`);
       if (!userData || !userData.id) return null;
-      
+
       return new User({
         id: userData.id,
         username: userData.username,
@@ -75,7 +75,7 @@ export class User {
       };
 
       await client.hSet(`${USER_PREFIX}${this.username}`, userData);
-      
+
       if (this.isOnline) {
         await client.sAdd(ACTIVE_USERS_SET, this.username);
       } else {
@@ -88,25 +88,51 @@ export class User {
     }
   }
 
+  async updateStatus() {
+    try {
+      // Update user status without touching password
+      const userData = {
+        id: this.id,
+        username: this.username,
+        password: this.password, // Keep existing password as-is
+        isOnline: this.isOnline.toString(),
+        lastSeen: this.lastSeen.toISOString(),
+        socketId: this.socketId || ''
+      };
+
+      await client.hSet(`${USER_PREFIX}${this.username}`, userData);
+
+      if (this.isOnline) {
+        await client.sAdd(ACTIVE_USERS_SET, this.username);
+      } else {
+        await client.sRem(ACTIVE_USERS_SET, this.username);
+      }
+
+      return this;
+    } catch (error) {
+      throw new Error(`Error updating user status: ${error.message}`);
+    }
+  }
+
   async setOnline(socketId) {
     this.isOnline = true;
     this.socketId = socketId;
     this.lastSeen = new Date();
-    return await this.save();
+    return await this.updateStatus();
   }
 
   async setOffline() {
     this.isOnline = false;
     this.socketId = null;
     this.lastSeen = new Date();
-    return await this.save();
+    return await this.updateStatus();
   }
 
   static async getActiveUsers() {
     try {
       const usernames = await client.sMembers(ACTIVE_USERS_SET);
       const users = [];
-      
+
       for (const username of usernames) {
         const user = await User.findByUsername(username);
         if (user && user.isOnline) {
@@ -118,16 +144,16 @@ export class User {
           });
         }
       }
-      
+
       return users;
     } catch (error) {
       throw new Error(`Error getting active users: ${error.message}`);
     }
   }
 
-  async comparePassword(plainPassword) {
+  async comparePassword(plainPassword, hashPassword) {
     try {
-      return await bcrypt.compare(plainPassword, this.password);
+      return await bcrypt.compare(plainPassword, hashPassword);
     } catch (error) {
       throw new Error(`Error comparing password: ${error.message}`);
     }

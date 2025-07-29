@@ -14,7 +14,9 @@ export class UserService {
       console.log(user, "USER IS");
 
       if (user) {
-        const isValidPassword = await user.comparePassword(password);
+        const isValidPassword = await user.comparePassword(password, user.password);
+        console.log(password, user.password);
+
         if (!isValidPassword) {
           throw new Error('Invalid credentials');
         }

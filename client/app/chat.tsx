@@ -14,7 +14,10 @@ import {
   Modal,
   Pressable,
   ActivityIndicator,
+  StatusBar,
+  Keyboard,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect } from "expo-router";
 import Toast from "react-native-toast-message";
@@ -28,7 +31,9 @@ import { LocationMessage } from "@/components/LocationMessage";
 import { LiveLocationMap } from "@/components/LiveLocationMap";
 import * as Location from "expo-location";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+const isSmallScreen = width < 375;
+const isTablet = width > 768;
 
 interface LocationData {
   latitude: number;
@@ -52,11 +57,9 @@ interface Message {
 function ChatContent() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-
-  if (!user) {
-    return <Redirect href="/login" />;
-  }
-
+  const insets = useSafeAreaInsets();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [messageText, setMessageText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
@@ -81,9 +84,33 @@ function ChatContent() {
   const liveLocationInterval = useRef<ReturnType<typeof setInterval> | null>(
     null
   );
+  const shouldUpdateLocation = useRef(false);
 
   useEffect(() => {
     loadRecentMessages();
+  }, []);
+
+  // Keyboard event listeners
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+        setIsKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardHeight(0);
+        setIsKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener?.remove();
+      keyboardDidShowListener?.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -111,20 +138,34 @@ function ChatContent() {
     if (messageText.trim()) {
       sendMessage(messageText);
       setMessageText("");
+      // Keep keyboard open after sending
+      if (Platform.OS === "ios") {
+        // Small delay to prevent keyboard flicker
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd();
+        }, 100);
+      }
     }
   };
 
   const handleLogout = async () => {
-    setShowMenu(false);
-
     try {
+      // Always stop location updates
+      shouldUpdateLocation.current = false;
+      if (liveLocationInterval.current) {
+        clearInterval(liveLocationInterval.current);
+        liveLocationInterval.current = null;
+      }
+      
       // Stop live location if active
       if (isLiveLocationActive) {
         stopLiveLocation();
-        if (liveLocationInterval.current) {
-          clearInterval(liveLocationInterval.current);
-        }
       }
+      
+      // Close menu first to prevent re-render
+      setShowMenu(false);
+      
+      // Perform logout
       await logout();
     } catch (error) {
       console.error("Logout error:", error);
@@ -163,8 +204,21 @@ function ChatContent() {
           location.accuracy
         );
 
+        // Set flag to enable location updates
+        shouldUpdateLocation.current = true;
+        
         // Set up periodic location updates every 30 seconds
         liveLocationInterval.current = setInterval(async () => {
+          // Check if we should still update location
+          if (!shouldUpdateLocation.current) {
+            console.log("Location updates disabled, clearing interval");
+            if (liveLocationInterval.current) {
+              clearInterval(liveLocationInterval.current);
+              liveLocationInterval.current = null;
+            }
+            return;
+          }
+          
           try {
             const currentLocation = await Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.High,
@@ -200,31 +254,47 @@ function ChatContent() {
   };
 
   const handleStopLiveLocation = () => {
+    console.log("handleStopLiveLocation called, isLiveLocationActive:", isLiveLocationActive);
+    
+    // Always disable the update flag and clear interval
+    shouldUpdateLocation.current = false;
+    if (liveLocationInterval.current) {
+      console.log("Clearing live location interval");
+      clearInterval(liveLocationInterval.current);
+      liveLocationInterval.current = null;
+    }
+    
     if (isLiveLocationActive) {
+      console.log("Stopping live location via socket");
       stopLiveLocation();
-      if (liveLocationInterval.current) {
-        clearInterval(liveLocationInterval.current);
-        liveLocationInterval.current = null;
-      }
       Toast.show({
         type: "info",
         text1: "Live location stopped",
         text2: "Location sharing has been disabled",
       });
+    } else {
+      console.log("Live location already inactive, just cleared interval");
     }
   };
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      shouldUpdateLocation.current = false;
       if (liveLocationInterval.current) {
         clearInterval(liveLocationInterval.current);
+        liveLocationInterval.current = null;
       }
     };
   }, []);
 
+  // Check user authentication after all hooks
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
+
   const renderMessage = ({ item, index }: { item: Message; index: number }) => {
-    const isOwnMessage = item.userId === user?.id;
+    const isOwnMessage = item.userId === user.id;
     const messageTime = new Date(item.timestamp).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -371,9 +441,14 @@ function ChatContent() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <StatusBar
+        barStyle={theme.isDark ? "light-content" : "dark-content"}
+        backgroundColor={theme.isDark ? "#2a2f32" : "#128c7e"}
+        translucent={false}
+      />
+      {/* Header with proper safe area */}
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <View style={styles.headerContent}>
           <View style={styles.headerLeft}>
             <View style={styles.groupAvatar}>
@@ -425,82 +500,104 @@ function ChatContent() {
       </View>
 
       {/* Messages */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMessage}
-        style={styles.messagesList}
-        contentContainerStyle={styles.messagesContent}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-      />
+      <View style={styles.messagesContainer}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMessage}
+          style={styles.messagesList}
+          contentContainerStyle={[
+            styles.messagesContent,
+            { paddingBottom: isKeyboardVisible ? 20 : 16 },
+          ]}
+          showsVerticalScrollIndicator={false}
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+          keyboardShouldPersistTaps="handled"
+        />
+      </View>
 
-      {/* Input Area */}
-      <View style={styles.inputContainer}>
-        <View style={styles.inputRow}>
-          <TouchableOpacity
-            style={styles.locationButton}
-            onPress={handleLocationMenuPress}
-            disabled={!isConnected || !isAuthenticated}
-          >
-            <Ionicons
-              name="location"
-              size={20}
-              color={
-                isConnected && isAuthenticated
-                  ? theme.isDark
-                    ? "#00a884"
-                    : "#128c7e"
-                  : "#999"
-              }
-            />
-          </TouchableOpacity>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              style={styles.textInput}
-              value={messageText}
-              onChangeText={setMessageText}
-              placeholder="Type a message..."
-              placeholderTextColor={
-                theme.isDark ? "rgba(233, 237, 239, 0.5)" : "rgba(0,0,0,0.4)"
-              }
-              multiline
-              maxLength={500}
-              editable={isConnected && isAuthenticated}
-              selectionColor={theme.isDark ? "#00a884" : "#128c7e"}
-              cursorColor={theme.isDark ? "#00a884" : "#128c7e"}
-              focusable={false}
-            />
-          </View>
-          <TouchableOpacity
-            style={[
-              styles.sendButton,
-              messageText.trim() && isConnected && isAuthenticated
-                ? styles.sendButtonActive
-                : styles.sendButtonInactive,
-            ]}
-            onPress={handleSendMessage}
-            disabled={!messageText.trim() || !isConnected || !isAuthenticated}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="send" size={20} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Live Location Status */}
-        {isLiveLocationActive && (
-          <View style={styles.liveLocationStatus}>
-            <View style={styles.liveLocationIndicator}>
-              <Ionicons name="radio-button-on" size={12} color="#4CAF50" />
-              <Text style={styles.liveLocationText}>Live location is on</Text>
+      {/* Input Area with keyboard-aware positioning */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? insets.top + 60 : 0}
+      >
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              paddingBottom:
+                Platform.OS === "ios"
+                  ? Math.max(insets.bottom, 8)
+                  : isKeyboardVisible
+                  ? 8
+                  : Math.max(insets.bottom, 8),
+            },
+          ]}
+        >
+          <View style={styles.inputRow}>
+            <TouchableOpacity
+              style={styles.locationButton}
+              onPress={handleLocationMenuPress}
+              disabled={!isConnected || !isAuthenticated}
+            >
+              <Ionicons
+                name="location"
+                size={20}
+                color={
+                  isConnected && isAuthenticated
+                    ? theme.isDark
+                      ? "#00a884"
+                      : "#ffffff"
+                    : "#999"
+                }
+              />
+            </TouchableOpacity>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInput}
+                value={messageText}
+                onChangeText={setMessageText}
+                placeholder="Type a message..."
+                placeholderTextColor={
+                  theme.isDark ? "rgba(233, 237, 239, 0.5)" : "rgba(0,0,0,0.4)"
+                }
+                multiline
+                maxLength={500}
+                editable={isConnected && isAuthenticated}
+                selectionColor={theme.isDark ? "#00a884" : "#128c7e"}
+                cursorColor={theme.isDark ? "#00a884" : "#128c7e"}
+              />
             </View>
-            <TouchableOpacity onPress={handleStopLiveLocation}>
-              <Text style={styles.stopLiveLocationText}>Stop</Text>
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                messageText.trim() && isConnected && isAuthenticated
+                  ? styles.sendButtonActive
+                  : styles.sendButtonInactive,
+              ]}
+              onPress={handleSendMessage}
+              disabled={!messageText.trim() || !isConnected || !isAuthenticated}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="send" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
-        )}
-      </View>
+
+          {/* Live Location Status */}
+          {isLiveLocationActive && (
+            <View style={styles.liveLocationStatus}>
+              <View style={styles.liveLocationIndicator}>
+                <Ionicons name="radio-button-on" size={12} color="#4CAF50" />
+                <Text style={styles.liveLocationText}>Live location is on</Text>
+              </View>
+              <TouchableOpacity onPress={handleStopLiveLocation}>
+                <Text style={styles.stopLiveLocationText}>Stop</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </KeyboardAvoidingView>
 
       {/* Menu Modal */}
       <Modal
@@ -561,7 +658,7 @@ function ChatContent() {
         visible={showLiveLocationMap}
         onClose={() => setShowLiveLocationMap(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -619,7 +716,6 @@ const createStyles = (theme: any) =>
     // Header Styles - Professional
     header: {
       backgroundColor: theme.isDark ? "#2a2f32" : "#128c7e",
-      paddingTop: 12,
       paddingBottom: 12,
       paddingHorizontal: 20,
       elevation: 6,
@@ -627,6 +723,7 @@ const createStyles = (theme: any) =>
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.15,
       shadowRadius: 6,
+      zIndex: 1000,
     },
     headerContent: {
       flexDirection: "row",
@@ -642,7 +739,7 @@ const createStyles = (theme: any) =>
       width: 44,
       height: 44,
       borderRadius: 22,
-      backgroundColor: theme.isDark ? "#00a884" : "#0f7c70",
+      backgroundColor: theme.isDark ? "#00a884" : "#ffffff",
       justifyContent: "center",
       alignItems: "center",
       marginRight: 14,
@@ -651,6 +748,8 @@ const createStyles = (theme: any) =>
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.2,
       shadowRadius: 2,
+      borderWidth: theme.isDark ? 0 : 2,
+      borderColor: theme.isDark ? "transparent" : "rgba(255,255,255,0.3)",
     },
     avatarIcon: {
       width: 24,
@@ -709,7 +808,7 @@ const createStyles = (theme: any) =>
       fontSize: 18,
     },
     groupAvatarText: {
-      color: "#fff",
+      color: theme.isDark ? "#fff" : "#128c7e",
       fontSize: 16,
       fontWeight: "700",
       letterSpacing: 0.5,
@@ -734,6 +833,10 @@ const createStyles = (theme: any) =>
       fontWeight: "500",
     },
 
+    // Messages Container
+    messagesContainer: {
+      flex: 1,
+    },
     // Message Styles - WhatsApp-like
     messagesList: {
       flex: 1,
@@ -767,7 +870,7 @@ const createStyles = (theme: any) =>
       fontWeight: "700",
     },
     messageWrapper: {
-      maxWidth: width * 0.75,
+      maxWidth: isTablet ? width * 0.6 : width * 0.75,
       position: "relative",
     },
     ownMessageWrapper: {
@@ -845,11 +948,13 @@ const createStyles = (theme: any) =>
     inputContainer: {
       backgroundColor: theme.isDark ? "#1e2428" : "#f0f2f5",
       paddingHorizontal: 12,
-      paddingVertical: 12,
+      paddingTop: 12,
       borderTopWidth: 1,
       borderTopColor: theme.isDark
         ? "rgba(255,255,255,0.1)"
         : "rgba(0,0,0,0.1)",
+      minHeight: 72,
+      position: "relative",
     },
     inputRow: {
       flexDirection: "row",
@@ -858,33 +963,35 @@ const createStyles = (theme: any) =>
     textInputContainer: {
       flex: 1,
       backgroundColor: theme.isDark ? "#2a2f32" : "#fff",
-      borderRadius: 24,
-      marginRight: 8,
-      minHeight: 48,
-      maxHeight: 120,
-      elevation: 1,
+      borderRadius: isSmallScreen ? 22 : 24,
+      marginHorizontal: 8,
+      minHeight: isSmallScreen ? 44 : 48,
+      maxHeight: isSmallScreen ? 100 : 120,
+      elevation: 2,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
-      shadowRadius: 2,
+      shadowRadius: 3,
       borderWidth: 1,
       borderColor: theme.isDark ? "#3a4a5c" : "#e1e8ed",
+      justifyContent: "center",
     },
     textInput: {
       flex: 1,
-      fontSize: 16,
+      fontSize: isSmallScreen ? 14 : 16,
       color: theme.isDark ? "#e9edef" : "#2c3e50",
-      paddingVertical: 5,
-      paddingHorizontal: 16,
-      textAlignVertical: "top",
+      paddingVertical: 12,
+      paddingHorizontal: isSmallScreen ? 12 : 16,
+      textAlignVertical: "center",
+      minHeight: isSmallScreen ? 44 : 48,
       outline: "none",
       borderWidth: 0,
       outlineOffset: 0,
     },
     sendButton: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: isSmallScreen ? 44 : 48,
+      height: isSmallScreen ? 44 : 48,
+      borderRadius: isSmallScreen ? 22 : 24,
       justifyContent: "center",
       alignItems: "center",
       elevation: 3,
@@ -899,15 +1006,20 @@ const createStyles = (theme: any) =>
     sendButtonInactive: {
       backgroundColor: theme.isDark
         ? "rgba(0, 168, 132, 0.6)"
-        : "rgba(18, 140, 126, 0.6)",
+        : "rgba(18, 140, 126, 0.7)",
     },
     locationButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: isSmallScreen ? 44 : 48,
+      height: isSmallScreen ? 44 : 48,
+      borderRadius: isSmallScreen ? 22 : 24,
       justifyContent: "center",
       alignItems: "center",
-      marginRight: 8,
+      backgroundColor: theme.isDark ? "rgba(255,255,255,0.1)" : "#128c7e",
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 3,
     },
     liveLocationStatus: {
       flexDirection: "row",
@@ -915,11 +1027,17 @@ const createStyles = (theme: any) =>
       alignItems: "center",
       backgroundColor: theme.isDark ? "#2a2f32" : "#fff",
       marginTop: 8,
+      marginHorizontal: 8,
       paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 20,
+      paddingVertical: 10,
+      borderRadius: 24,
       borderWidth: 1,
       borderColor: "#4CAF50",
+      elevation: 1,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
     },
     liveLocationIndicator: {
       flexDirection: "row",

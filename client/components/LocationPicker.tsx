@@ -1,11 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet, Platform } from 'react-native';
-import * as Location from 'expo-location';
-import { useTheme } from '@/contexts/ThemeContext';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import * as Location from "expo-location";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface LocationPickerProps {
-  onLocationSelect: (location: { latitude: number; longitude: number; accuracy?: number }) => void;
+  onLocationSelect: (location: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+  }) => void;
   onCancel: () => void;
   isLiveMode?: boolean;
 }
@@ -13,11 +26,13 @@ interface LocationPickerProps {
 export const LocationPicker: React.FC<LocationPickerProps> = ({
   onLocationSelect,
   onCancel,
-  isLiveMode = false
+  isLiveMode = false,
 }) => {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState<Location.LocationPermissionResponse | null>(null);
+  const [permissionStatus, setPermissionStatus] =
+    useState<Location.LocationPermissionResponse | null>(null);
 
   useEffect(() => {
     checkLocationPermission();
@@ -31,16 +46,16 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   const requestLocationPermission = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     setPermissionStatus({ status } as Location.LocationPermissionResponse);
-    return status === 'granted';
+    return status === "granted";
   };
 
   const getCurrentLocation = async () => {
     setLoading(true);
     try {
       // Web fallback - use browser geolocation API
-      if (Platform.OS === 'web') {
+      if (Platform.OS === "web") {
         if (!navigator.geolocation) {
-          Alert.alert('Error', 'Geolocation is not supported by this browser.');
+          Alert.alert("Error", "Geolocation is not supported by this browser.");
           return;
         }
 
@@ -53,8 +68,11 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
             });
           },
           (error) => {
-            Alert.alert('Error', 'Unable to get your current location. Please enable location permissions in your browser.');
-            console.error('Web geolocation error:', error);
+            Alert.alert(
+              "Error",
+              "Unable to get your current location. Please enable location permissions in your browser."
+            );
+            console.error("Web geolocation error:", error);
           },
           {
             enableHighAccuracy: true,
@@ -66,10 +84,13 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       }
 
       // Native platform logic
-      if (permissionStatus?.status !== 'granted') {
+      if (permissionStatus?.status !== "granted") {
         const granted = await requestLocationPermission();
         if (!granted) {
-          Alert.alert('Permission Denied', 'Location permission is required to share your location.');
+          Alert.alert(
+            "Permission Denied",
+            "Location permission is required to share your location."
+          );
           return;
         }
       }
@@ -86,8 +107,11 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
         accuracy: location.coords.accuracy || undefined,
       });
     } catch (error) {
-      Alert.alert('Error', 'Unable to get your current location. Please try again.');
-      console.error('Location error:', error);
+      Alert.alert(
+        "Error",
+        "Unable to get your current location. Please try again."
+      );
+      console.error("Location error:", error);
     } finally {
       setLoading(false);
     }
@@ -95,62 +119,102 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
 
   const styles = StyleSheet.create({
     container: {
-      padding: 20,
       backgroundColor: theme.colors.background,
-      borderTopLeftRadius: 15,
-      borderTopRightRadius: 15,
-      minHeight: 200,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      paddingBottom: Math.max(insets.bottom + 20, 40),
+      minHeight: 280,
+      maxHeight: "70%",
     },
     header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 20,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 10,
     },
     title: {
       fontSize: 18,
-      fontWeight: 'bold',
+      fontWeight: "700",
       color: theme.colors.text,
     },
     closeButton: {
-      padding: 5,
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: theme.colors.surface,
+      justifyContent: "center",
+      alignItems: "center",
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
     },
     content: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 20,
     },
-    icon: {
-      marginBottom: 15,
+    iconContainer: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: theme.colors.primary + "20",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 24,
     },
     description: {
       fontSize: 16,
       color: theme.colors.textSecondary,
-      textAlign: 'center',
-      marginBottom: 20,
-      lineHeight: 22,
+      textAlign: "center",
+      marginBottom: 32,
+      marginTop: 40,
+      lineHeight: 24,
+      paddingHorizontal: 16,
     },
     button: {
       backgroundColor: theme.colors.primary,
-      paddingHorizontal: 30,
-      paddingVertical: 12,
-      borderRadius: 25,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
+      paddingHorizontal: 32,
+      paddingVertical: 16,
+      borderRadius: 28,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 12,
+      minWidth: 200,
+      elevation: 3,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
     },
     buttonText: {
-      color: 'white',
+      color: "white",
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: "600",
     },
     cancelButton: {
-      marginTop: 15,
-      padding: 10,
+      marginTop: 20,
+      paddingVertical: 16,
+      paddingHorizontal: 32,
+      borderRadius: 28,
+      backgroundColor: theme.colors.surface,
+      minWidth: 200,
+      alignItems: "center",
+      elevation: 1,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
     },
     cancelText: {
-      color: theme.colors.textSecondary,
+      color: theme.colors.text,
       fontSize: 16,
+      fontWeight: "600",
     },
   });
 
@@ -158,47 +222,45 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>
-          {isLiveMode ? 'Share Live Location' : 'Share Location'}
+          {isLiveMode ? "Share Live Location" : "Share Location"}
         </Text>
         <TouchableOpacity style={styles.closeButton} onPress={onCancel}>
-          <IconSymbol name="xmark" size={20} color={theme.colors.textSecondary} />
+          <Ionicons name="close" size={20} color={theme.colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
-        <View style={styles.icon}>
-          <IconSymbol 
-            name={isLiveMode ? "location.fill" : "location"} 
-            size={50} 
-            color={theme.colors.primary} 
-          />
-        </View>
-        
         <Text style={styles.description}>
-          {isLiveMode 
-            ? 'Share your live location with the group for 1 hour. Your location will update in real-time.'
-            : 'Share your current location with the group.'
-          }
+          {isLiveMode
+            ? "Share your live location with the group for 1 hour. Your location will update in real-time."
+            : "Share your current location with the group."}
         </Text>
 
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={getCurrentLocation}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : (
-            <IconSymbol name="location.fill" size={16} color="white" />
-          )}
-          <Text style={styles.buttonText}>
-            {loading ? 'Getting Location...' : 'Share Location'}
-          </Text>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={getCurrentLocation}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Ionicons name="location" size={18} color="white" />
+            )}
+            <Text style={styles.buttonText}>
+              {loading ? "Getting Location..." : "Share Location"}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={onCancel}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

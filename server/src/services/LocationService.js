@@ -1,5 +1,4 @@
 import Location from '../models/Location.js';
-import ChatService from './ChatService.js';
 import logger from '../utils/logger.js';
 
 export class LocationService {
@@ -22,14 +21,6 @@ export class LocationService {
       });
 
       await location.save();
-
-      // Send location message to chat
-      await ChatService.sendLocationMessage(userId, username, {
-        latitude,
-        longitude,
-        accuracy,
-        type: 'one_time'
-      });
 
       logger.info(`One-time location shared by ${username}`);
       return location;
@@ -61,14 +52,6 @@ export class LocationService {
       });
 
       await location.save();
-
-      // Send live location start message to chat
-      await ChatService.sendLocationMessage(userId, username, {
-        latitude,
-        longitude,
-        accuracy,
-        type: 'live'
-      });
 
       logger.info(`Live location sharing started by ${username}`);
       return location;

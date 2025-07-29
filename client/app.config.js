@@ -1,11 +1,11 @@
 export default {
   expo: {
-    name: "client",
-    slug: "client",
+    name: "trackly",
+    slug: "trackly",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: "client",
+    scheme: "trackly",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {

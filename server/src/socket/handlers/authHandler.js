@@ -1,5 +1,6 @@
 import UserService from '../../services/UserService.js';
 import User from '../../models/User.js';
+import LocationService from '../../services/LocationService.js';
 import { validateSocketData } from '../../middlewares/validation.js';
 import { socketAuthSchema } from '../../validators/schemas.js';
 import { publishMessage, CHANNELS } from '../../config/redisClient.js';
@@ -100,6 +101,24 @@ export const handleDisconnect = async (socket) => {
   try {
     if (socket.username) {
       await UserService.setUserOffline(socket.username);
+
+      // Auto-stop any active live location sharing
+      if (socket.user && socket.user.id) {
+        try {
+          const stoppedLocations = await LocationService.stopLiveLocationSharing(socket.user.id);
+          if (stoppedLocations.length > 0) {
+            // Notify other users that live location stopped due to disconnect
+            socket.to('general').emit('live_location_stopped', {
+              userId: socket.user.id,
+              stoppedBy: socket.username,
+              reason: 'disconnected'
+            });
+            logger.info(`Auto-stopped live location for disconnected user ${socket.username}`);
+          }
+        } catch (locationError) {
+          logger.error('Error stopping live location on disconnect:', locationError.message);
+        }
+      }
 
       // Notify other users about user disconnecting
       socket.to('general').emit('user_left', {

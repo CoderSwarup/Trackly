@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Dimensions, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSocket } from "@/contexts/SocketContext";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Ionicons } from "@expo/vector-icons";
 
 // Conditional import for react-native-maps (only on native platforms)
 let MapView: any = null;
@@ -41,6 +48,8 @@ interface LocationMapViewProps {
   showAllLocations?: boolean;
   height?: number;
   interactive?: boolean;
+  zoomLevel?: "close" | "medium" | "far";
+  showControls?: boolean;
 }
 
 interface LiveLocationMarker {
@@ -58,29 +67,50 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
   showAllLocations = false,
   height: customHeight = 200,
   interactive = true,
+  zoomLevel = "medium",
+  showControls = true,
 }) => {
   const { theme } = useTheme();
   const { liveLocations } = useSocket();
   const mapRef = useRef<any>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [liveMarkers, setLiveMarkers] = useState<LiveLocationMarker[]>([]);
+  const [currentZoom, setCurrentZoom] = useState(zoomLevel);
+  const [mapReady, setMapReady] = useState(false);
+
+  const getZoomDelta = (level: string) => {
+    switch (level) {
+      case "close":
+        return { latitudeDelta: 0.005, longitudeDelta: 0.005 };
+      case "medium":
+        return { latitudeDelta: 0.01, longitudeDelta: 0.01 };
+      case "far":
+        return { latitudeDelta: 0.05, longitudeDelta: 0.05 };
+      default:
+        return { latitudeDelta: 0.01, longitudeDelta: 0.01 };
+    }
+  };
 
   useEffect(() => {
     if (location) {
+      const zoomDeltas = getZoomDelta(currentZoom);
       const newRegion = {
         latitude: location.latitude,
         longitude: location.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        ...zoomDeltas,
       };
       setRegion(newRegion);
 
-      // Animate to the location
-      if (mapRef.current) {
-        mapRef.current.animateToRegion(newRegion, 1000);
+      // Animate to the location with better timing
+      if (mapRef.current && mapReady) {
+        setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.animateToRegion(newRegion, 800);
+          }
+        }, 100);
       }
     }
-  }, [location]);
+  }, [location, currentZoom, mapReady]);
 
   useEffect(() => {
     if (showAllLocations && liveLocations.length > 0) {
@@ -120,19 +150,23 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
       setLiveMarkers(newMarkers);
 
       // Fit all markers in view
-      if (newMarkers.length > 0 && mapRef.current) {
+      if (newMarkers.length > 0 && mapRef.current && mapReady) {
         const coordinates = newMarkers.map((marker) => ({
           latitude: marker.location.latitude,
           longitude: marker.location.longitude,
         }));
 
-        mapRef.current.fitToCoordinates(coordinates, {
-          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-          animated: true,
-        });
+        setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.fitToCoordinates(coordinates, {
+              edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+              animated: true,
+            });
+          }
+        }, 100);
       }
     }
-  }, [liveLocations, showAllLocations]);
+  }, [liveLocations, showAllLocations, mapReady]);
 
   const getMarkerColor = (
     locationType: "one_time" | "live",
@@ -181,9 +215,9 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
               },
             ]}
           >
-            <IconSymbol
+            <Ionicons
               name={
-                markerLocation.type === "live" ? "location.fill" : "location"
+                markerLocation.type === "live" ? "location" : "location-outline"
               }
               size={16}
               color="white"
@@ -239,8 +273,10 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
             },
           ]}
         >
-          <IconSymbol
-            name={markerLocation.type === "live" ? "location.fill" : "location"}
+          <Ionicons
+            name={
+              markerLocation.type === "live" ? "location" : "location-outline"
+            }
             size={16}
             color="white"
           />
@@ -275,7 +311,11 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
           { height: customHeight, backgroundColor: theme.colors.surface },
         ]}
       >
-        <IconSymbol name="map" size={32} color={theme.colors.textSecondary} />
+        <Ionicons
+          name="map-outline"
+          size={32}
+          color={theme.colors.textSecondary}
+        />
         <Text style={[styles.webFallbackText, { color: theme.colors.text }]}>
           Interactive Map
         </Text>
@@ -303,8 +343,8 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
           { height: customHeight, backgroundColor: theme.colors.surface },
         ]}
       >
-        <IconSymbol
-          name="location"
+        <Ionicons
+          name="location-outline"
           size={32}
           color={theme.colors.textSecondary}
         />
@@ -317,61 +357,124 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
     );
   }
 
-  const mapStyle = theme.isDark
-    ? [
-        {
-          featureType: "all",
-          elementType: "geometry",
-          stylers: [{ color: "#242f3e" }],
-        },
-        {
-          featureType: "all",
-          elementType: "labels.text.stroke",
-          stylers: [{ lightness: -80 }],
-        },
-        {
-          featureType: "administrative",
-          elementType: "labels.text.fill",
-          stylers: [{ color: "#746855" }],
-        },
-        {
-          featureType: "road",
-          elementType: "geometry.fill",
-          stylers: [{ color: "#2b3544" }],
-        },
-        {
-          featureType: "water",
-          elementType: "geometry",
-          stylers: [{ color: "#17263c" }],
-        },
-      ]
-    : undefined;
+  // Use default Google Maps styling for better visibility
+  const mapStyle = undefined;
+
+  const handleZoomIn = () => {
+    if (mapRef.current && location && mapReady) {
+      const currentRegion = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta:
+          currentZoom === "far"
+            ? 0.01
+            : currentZoom === "medium"
+            ? 0.005
+            : 0.002,
+        longitudeDelta:
+          currentZoom === "far"
+            ? 0.01
+            : currentZoom === "medium"
+            ? 0.005
+            : 0.002,
+      };
+
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(currentRegion, 300);
+      }
+
+      if (currentZoom === "far") setCurrentZoom("medium");
+      else if (currentZoom === "medium") setCurrentZoom("close");
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (mapRef.current && location && mapReady) {
+      const currentRegion = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta:
+          currentZoom === "close"
+            ? 0.01
+            : currentZoom === "medium"
+            ? 0.05
+            : 0.1,
+        longitudeDelta:
+          currentZoom === "close"
+            ? 0.01
+            : currentZoom === "medium"
+            ? 0.05
+            : 0.1,
+      };
+
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(currentRegion, 300);
+      }
+
+      if (currentZoom === "close") setCurrentZoom("medium");
+      else if (currentZoom === "medium") setCurrentZoom("far");
+    }
+  };
+
+  const handleMyLocation = () => {
+    if (location && mapRef.current && mapReady) {
+      const zoomDeltas = getZoomDelta("close");
+      const newRegion = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        ...zoomDeltas,
+      };
+
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(newRegion, 800);
+      }
+      setCurrentZoom("close");
+    }
+  };
 
   return (
-    <View style={[styles.container, { height: customHeight }]}>
+    <View
+      style={[styles.container, { height: customHeight }]}
+      pointerEvents="box-none"
+    >
       <MapView
         ref={mapRef}
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
-        style={styles.map}
+        style={[styles.map, { flex: 1 }]}
+        pointerEvents="auto"
+        onMapReady={() => setMapReady(true)}
+        onRegionChangeComplete={(region: any) => {
+          // Update zoom level based on region changes
+          if (region.latitudeDelta < 0.008) setCurrentZoom("close");
+          else if (region.latitudeDelta < 0.03) setCurrentZoom("medium");
+          else setCurrentZoom("far");
+        }}
         initialRegion={
           region || {
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitude: location?.latitude || 37.78825,
+            longitude: location?.longitude || -122.4324,
+            ...getZoomDelta(currentZoom),
           }
         }
-        customMapStyle={mapStyle}
+        // Essential gesture controls
         scrollEnabled={interactive}
         zoomEnabled={interactive}
         rotateEnabled={interactive}
         pitchEnabled={interactive}
-        showsUserLocation={showCurrentUser}
-        showsMyLocationButton={interactive && showCurrentUser}
+        // Map configuration
         mapType="standard"
-        showsPointsOfInterest={false}
-        showsCompass={interactive}
-        showsScale={interactive}
+        showsUserLocation={showCurrentUser}
+        showsMyLocationButton={false}
+        showsCompass={false}
+        showsScale={false}
+        showsBuildings={true}
+        showsTraffic={false}
+        showsPointsOfInterest={true}
+        loadingEnabled={false}
+        toolbarEnabled={false}
+        moveOnMarkerPress={false}
+        minZoomLevel={3}
+        maxZoomLevel={20}
       >
         {/* Single location marker */}
         {location && renderMarker(location, "single-location")}
@@ -389,6 +492,63 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
           )}
       </MapView>
 
+      {/* Enhanced Map Controls */}
+      {interactive && showControls && (
+        <View style={styles.mapControlsContainer} pointerEvents="box-none">
+          <View style={styles.zoomControls} pointerEvents="box-none">
+            <TouchableOpacity
+              style={[
+                styles.zoomButton,
+                { backgroundColor: theme.colors.background },
+              ]}
+              onPress={handleZoomIn}
+              disabled={currentZoom === "close"}
+            >
+              <Ionicons
+                name="add"
+                size={20}
+                color={
+                  currentZoom === "close"
+                    ? theme.colors.textSecondary
+                    : theme.colors.text
+                }
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.zoomButton,
+                styles.zoomButtonBottom,
+                { backgroundColor: theme.colors.background },
+              ]}
+              onPress={handleZoomOut}
+              disabled={currentZoom === "far"}
+            >
+              <Ionicons
+                name="remove"
+                size={20}
+                color={
+                  currentZoom === "far"
+                    ? theme.colors.textSecondary
+                    : theme.colors.text
+                }
+              />
+            </TouchableOpacity>
+          </View>
+
+          {location && (
+            <TouchableOpacity
+              style={[
+                styles.myLocationButton,
+                { backgroundColor: theme.colors.background },
+              ]}
+              onPress={handleMyLocation}
+            >
+              <Ionicons name="locate" size={20} color={theme.colors.primary} />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
       {/* Location info overlay for single location */}
       {location && !showAllLocations && (
         <View
@@ -396,10 +556,11 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
             styles.locationInfo,
             { backgroundColor: theme.colors.background },
           ]}
+          pointerEvents="none"
         >
           <View style={styles.locationInfoContent}>
-            <IconSymbol
-              name={location.type === "live" ? "location.fill" : "location"}
+            <Ionicons
+              name={location.type === "live" ? "location" : "location-outline"}
               size={16}
               color={getMarkerColor(location.type, location.isActive)}
             />
@@ -524,5 +685,45 @@ const styles = StyleSheet.create({
   },
   accuracyText: {
     fontSize: 12,
+  },
+  mapControlsContainer: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    zIndex: 1000,
+  },
+  zoomControls: {
+    marginBottom: 12,
+  },
+  zoomButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+  },
+  zoomButtonBottom: {
+    marginTop: 2,
+  },
+  myLocationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
   },
 });

@@ -74,10 +74,13 @@ const socketServer = (httpServer) => {
 
 // Set up Redis pub/sub for horizontal scaling
 const setupRedisPubSub = (io) => {
-  // Subscribe to chat messages
+  // Subscribe to chat messages (for multi-server scaling only)
+  // Messages are now delivered immediately in chatHandler
   subscribeToChannel(CHANNELS.CHAT_MESSAGE, (data) => {
-    const { message, room } = data;
-    io.in(room).emit('new_message', message);
+    // Only needed for cross-server scaling - skip if single server
+    // const { message, room } = data;
+    // io.in(room).emit('new_message', message);
+    logger.debug('Chat message published to Redis for scaling');
   });
 
   // Subscribe to user events
