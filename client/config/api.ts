@@ -1,5 +1,5 @@
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
-export const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL;
+export const API_BASE_URL = "https://leadedge.easytechinnovate.site/api/v1";
+export const SOCKET_URL = "https://leadedge.easytechinnovate.site";
 
 // API endpoints
 export const API_ENDPOINTS = {

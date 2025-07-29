@@ -9,13 +9,13 @@ import React, {
 import { io, Socket } from "socket.io-client";
 import { SOCKET_URL } from "../config/api";
 import { useAuth } from "./AuthContext";
-
+import Toast from "react-native-toast-message";
 interface LocationData {
   latitude: number;
   longitude: number;
   accuracy?: number;
   timestamp: string;
-  type: 'one_time' | 'live';
+  type: "one_time" | "live";
   isActive?: boolean;
 }
 
@@ -53,9 +53,21 @@ interface SocketContextType {
   onlineUsers: User[];
   liveLocations: LiveLocationState[];
   sendMessage: (content: string) => void;
-  shareLocation: (latitude: number, longitude: number, accuracy?: number) => void;
-  startLiveLocation: (latitude: number, longitude: number, accuracy?: number) => void;
-  updateLiveLocation: (latitude: number, longitude: number, accuracy?: number) => void;
+  shareLocation: (
+    latitude: number,
+    longitude: number,
+    accuracy?: number
+  ) => void;
+  startLiveLocation: (
+    latitude: number,
+    longitude: number,
+    accuracy?: number
+  ) => void;
+  updateLiveLocation: (
+    latitude: number,
+    longitude: number,
+    accuracy?: number
+  ) => void;
   stopLiveLocation: () => void;
   isConnected: boolean;
   isAuthenticated: boolean;
@@ -98,10 +110,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         console.log("Disconnected from server, reason:", reason);
         setIsConnected(false);
         setIsAuthenticated(false);
-        
+
         // Auto-stop live location when socket disconnects
         if (isLiveLocationActiveRef.current) {
-          console.log("Auto-stopping live location due to disconnection, reason:", reason);
+          console.log(
+            "Auto-stopping live location due to disconnection, reason:",
+            reason
+          );
           setIsLiveLocationActive(false);
           isLiveLocationActiveRef.current = false;
           setLiveLocations([]);
@@ -116,7 +131,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
         // Request recent messages
         newSocket.emit("get_recent_messages", { limit: 50 });
-        
+
         // Request active locations
         newSocket.emit("get_active_locations");
       });
@@ -134,7 +149,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         console.log("New message received:", message);
         // Check for duplicate messages
         setMessages((prev) => {
-          const isDuplicate = prev.some(m => m.id === message.id);
+          const isDuplicate = prev.some((m) => m.id === message.id);
           if (isDuplicate) {
             console.log("Duplicate message detected, ignoring:", message.id);
             return prev;
@@ -154,7 +169,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         console.log("User joined:", data.user);
         setOnlineUsers((prev) => {
           // Check if user is already in the list to avoid duplicates
-          const existingUser = prev.find(user => user.username === data.user.username);
+          const existingUser = prev.find(
+            (user) => user.username === data.user.username
+          );
           if (existingUser) {
             return prev; // User already exists, don't add duplicate
           }
@@ -190,7 +207,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         console.log("Live location started:", data);
         if (data.location) {
           setLiveLocations((prev) => {
-            const filtered = prev.filter(loc => loc.userId !== data.location.userId);
+            const filtered = prev.filter(
+              (loc) => loc.userId !== data.location.userId
+            );
             return [...filtered, data.location];
           });
         }
@@ -202,12 +221,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         console.log("Setting isLiveLocationActive to true");
         setIsLiveLocationActive(true);
         isLiveLocationActiveRef.current = true;
-        
+
         // Debug: Check state after setting with a ref to get current state
         setTimeout(() => {
           console.log("Live location active state check:", {
             stateValue: isLiveLocationActive,
-            refValue: isLiveLocationActiveRef.current
+            refValue: isLiveLocationActiveRef.current,
           });
         }, 100);
       });
@@ -215,8 +234,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       newSocket.on("live_location_updated", (data) => {
         console.log("Live location updated:", data);
         if (data.location) {
-          setLiveLocations((prev) => 
-            prev.map(loc => 
+          setLiveLocations((prev) =>
+            prev.map((loc) =>
               loc.userId === data.location.userId ? data.location : loc
             )
           );
@@ -230,8 +249,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       newSocket.on("live_location_stopped", (data) => {
         console.log("Live location stopped:", data);
         if (data.userId) {
-          setLiveLocations((prev) => 
-            prev.filter(loc => loc.userId !== data.userId)
+          setLiveLocations((prev) =>
+            prev.filter((loc) => loc.userId !== data.userId)
           );
         }
         // Messages come via new_message now
@@ -249,10 +268,20 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         setLiveLocations(data.liveLocations || []);
       });
 
+      newSocket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+        Toast.show({
+          type: "error",
+          text1: "Connection Error",
+          text2: "Failed to connect to chat server.",
+        });
+      });
+
       return () => {
         if (newSocket) {
           newSocket.emit("logout");
           newSocket.close();
+          newSocket.disconnect();
         }
         // Batch state updates to prevent multiple re-renders
         setSocket(null);
@@ -279,7 +308,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
   };
 
-  const shareLocation = (latitude: number, longitude: number, accuracy?: number) => {
+  const shareLocation = (
+    latitude: number,
+    longitude: number,
+    accuracy?: number
+  ) => {
     if (socket && isAuthenticated) {
       console.log("Sharing location:", { latitude, longitude, accuracy });
       socket.emit("share_location", {
@@ -292,7 +325,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
   };
 
-  const startLiveLocation = (latitude: number, longitude: number, accuracy?: number) => {
+  const startLiveLocation = (
+    latitude: number,
+    longitude: number,
+    accuracy?: number
+  ) => {
     if (socket && isAuthenticated) {
       console.log("Starting live location:", { latitude, longitude, accuracy });
       socket.emit("start_live_location", {
@@ -301,20 +338,31 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         accuracy,
       });
     } else {
-      console.log("Cannot start live location - not authenticated or no socket");
+      console.log(
+        "Cannot start live location - not authenticated or no socket"
+      );
     }
   };
 
-  const updateLiveLocation = (latitude: number, longitude: number, accuracy?: number) => {
+  const updateLiveLocation = (
+    latitude: number,
+    longitude: number,
+    accuracy?: number
+  ) => {
     console.log("Debug updateLiveLocation:", {
       hasSocket: !!socket,
       isAuthenticated,
       isLiveLocationActive,
       isLiveLocationActiveRef: isLiveLocationActiveRef.current,
-      isConnected
+      isConnected,
     });
-    
-    if (socket && isAuthenticated && isLiveLocationActiveRef.current && isConnected) {
+
+    if (
+      socket &&
+      isAuthenticated &&
+      isLiveLocationActiveRef.current &&
+      isConnected
+    ) {
       console.log("Updating live location:", { latitude, longitude, accuracy });
       socket.emit("update_live_location", {
         latitude,
@@ -322,13 +370,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         accuracy,
       });
     } else {
-      console.log("Cannot update live location - not authenticated, no socket, or not active");
+      console.log(
+        "Cannot update live location - not authenticated, no socket, or not active"
+      );
       console.log("State check:", {
         socket: !!socket,
         isAuthenticated,
         isLiveLocationActive,
         isLiveLocationActiveRef: isLiveLocationActiveRef.current,
-        isConnected
+        isConnected,
       });
     }
   };
@@ -338,12 +388,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.log("Stopping live location");
       socket.emit("stop_live_location");
     } else {
-      console.log("Cannot stop live location - not authenticated, no socket, or not active");
+      console.log(
+        "Cannot stop live location - not authenticated, no socket, or not active"
+      );
       console.log("Stop state check:", {
         socket: !!socket,
         isAuthenticated,
         isLiveLocationActive,
-        isLiveLocationActiveRef: isLiveLocationActiveRef.current
+        isLiveLocationActiveRef: isLiveLocationActiveRef.current,
       });
     }
   };
