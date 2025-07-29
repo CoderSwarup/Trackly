@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 16.3.2",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "http://147.93.110.173:8888/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "http://147.93.110.173:8888",
+        "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyANR_BEwj4OfdgfdhDCqaI2wHCWjLputTlzk",
+        "API_KEY": "AIzaSyANR_BEwj4OfdgfdhDCqaI2wHCWjLputTlzk"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "http://147.93.110.173:8888/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "http://147.93.110.173:8888",
+        "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyANR_BEwj4OfdgfdhDCqaI2wHCWjLputTlzk",
+        "API_KEY": "AIzaSyANR_BEwj4OfdgfdhDCqaI2wHCWjLputTlzk"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "http://147.93.110.173:8888/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "http://147.93.110.173:8888",
+        "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyANR_BEwj4OfdgfdhDCqaI2wHCWjLputTlzk",
+        "API_KEY": "AIzaSyANR_BEwj4OfdgfdhDCqaI2wHCWjLputTlzk"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

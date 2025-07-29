@@ -46,6 +46,16 @@ The app includes:
 - Professional location message cards
 - Interactive full-screen maps
 
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1rem; justify-content: center;">
+  <img src="images/IMG-1.jpeg" alt="Login Screen" style="width: 200px; max-width: 200px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+  <img src="images/IMG-2.jpeg" alt="Main Screen" style="width: 200px; max-width: 200px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+  <img src="images/IMG-3.jpeg" alt="Location View" style="width: 200px; max-width: 200px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+   <div>
+    <img src="images/IMG-4.png" alt="Sentry Monitoring" style="width: 300px; max-width: 300px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+   <img src="images/IMG-5.png" alt="Redis Integration" style="width: 300px; max-width: 300px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+   </div>
+</div>
+
 ## 🔧 Local Setup
 
 ### Prerequisites
@@ -128,6 +138,7 @@ cp .env.example .env
 ```env
 EXPO_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
 EXPO_PUBLIC_SOCKET_URL=http://localhost:5000
+EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=""
 ```
 
 **Start the React Native app:**

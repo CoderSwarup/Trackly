@@ -21,7 +21,7 @@ export default {
         NSLocationAlwaysAndWhenInUseUsageDescription: "Trackly needs your location to share it with others in the chat."
       },
       config: {
-        googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+        googleMapsApiKey: "AIzaSyANR_BEwj4OgzKBDCqaI2wHCWjLputTlzk"
       }
     },
     android: {
@@ -64,8 +64,8 @@ export default {
     extra: {
       apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL,
       socketUrl: process.env.EXPO_PUBLIC_SOCKET_URL,
-      eas: {
-        projectId: "03154d9c-de70-4da0-83de-752eecbe840b"
+      "eas": {
+        "projectId": "34846462-95ca-4722-9820-c3715bd68c46"
       }
     }
   }
