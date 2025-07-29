@@ -127,7 +127,7 @@ export default function LoginScreen() {
               <View style={styles.logoContainer}>
                 <Ionicons name="chatbubbles" size={28} color="#fff" />
               </View>
-              <Text style={styles.title}>ChatApp</Text>
+              <Text style={styles.title}>Trackly</Text>
               <Text style={styles.subtitle}>
                 Connect with friends instantly
               </Text>
@@ -189,7 +189,7 @@ export default function LoginScreen() {
               </TouchableOpacity>
 
               <Text style={styles.infoText}>
-                New to ChatApp? An account will be created automatically
+                New to Trackly ? An account will be created automatically
               </Text>
             </View>
           </View>

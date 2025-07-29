@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,10 @@ import {
   Dimensions,
   StatusBar,
   SafeAreaView,
+  Animated,
 } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useSocket } from "@/contexts/SocketContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LocationMapView } from "./LocationMapView";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,16 +43,84 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
   isOwn,
 }) => {
   const { theme } = useTheme();
+  const { liveLocations } = useSocket();
   const insets = useSafeAreaInsets();
 
   const [showMapModal, setShowMapModal] = useState(false);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentLocation, setCurrentLocation] = useState(location);
+
+  // Animation for live location pulse
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Update location data from live locations if it's a live location
+  useEffect(() => {
+    if (location.type === "live") {
+      const liveLocationUpdate = liveLocations.find(
+        (liveLocation) => liveLocation.username === username
+      );
+
+      if (liveLocationUpdate) {
+        setCurrentLocation({
+          latitude: liveLocationUpdate.latitude,
+          longitude: liveLocationUpdate.longitude,
+          accuracy: liveLocationUpdate.accuracy,
+          timestamp: liveLocationUpdate.timestamp,
+          type: "live",
+          isActive: liveLocationUpdate.isActive,
+        });
+      }
+    }
+  }, [
+    liveLocations,
+    location.type,
+    location.latitude,
+    location.longitude,
+    username,
+  ]);
+
+  useEffect(() => {
+    if (currentLocation.type === "live" && currentLocation.isActive) {
+      // Start pulsing animation for live locations
+      const pulseAnimation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.3,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      pulseAnimation.start();
+
+      return () => pulseAnimation.stop();
+    }
+  }, [currentLocation.type, currentLocation.isActive, pulseAnim]);
+
+  // Update time display for live locations
+  useEffect(() => {
+    if (currentLocation.type === "live" && currentLocation.isActive) {
+      const interval = setInterval(() => {
+        setCurrentTime(Date.now());
+      }, 5000); // Update every 5 seconds for active live locations
+
+      return () => clearInterval(interval);
+    }
+  }, [currentLocation.type, currentLocation.isActive]);
 
   const openInMaps = () => {
     setShowMapModal(true);
   };
 
   const formatCoordinates = () => {
-    return `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`;
+    return `${currentLocation.latitude.toFixed(
+      6
+    )}, ${currentLocation.longitude.toFixed(6)}`;
   };
 
   const formatTime = () => {
@@ -58,9 +128,24 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  const formatLocationTime = () => {
+    if (currentLocation.timestamp) {
+      const locationDate = new Date(currentLocation.timestamp);
+      const diffSeconds = Math.floor(
+        (currentTime - locationDate.getTime()) / 1000
+      );
+
+      if (diffSeconds < 10) return "Just now";
+      if (diffSeconds < 60) return `${diffSeconds}s ago`;
+      if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`;
+      return `${Math.floor(diffSeconds / 3600)}h ago`;
+    }
+    return "";
+  };
+
   const getLocationTypeText = () => {
-    if (location.type === "live") {
-      return location.isActive
+    if (currentLocation.type === "live") {
+      return currentLocation.isActive
         ? "Live Location (Active)"
         : "Live Location (Stopped)";
     }
@@ -78,6 +163,7 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
         : "#ffffff",
       padding: 12,
       borderRadius: 15,
+      width: "50%",
       borderBottomRightRadius: isOwn ? 5 : 15,
       borderBottomLeftRadius: isOwn ? 15 : 5,
       maxWidth: isTablet ? width * 0.6 : width * 0.75,
@@ -95,6 +181,10 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
     },
     locationIcon: {
       marginRight: 8,
+    },
+    animatedLocationIcon: {
+      alignItems: "center",
+      justifyContent: "center",
     },
     headerText: {
       flex: 1,
@@ -121,6 +211,17 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
       borderRadius: 8,
       marginBottom: 8,
     },
+    coordinatesRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 4,
+    },
+    detailsRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
     coordinatesText: {
       fontSize: 12,
       fontFamily: "monospace",
@@ -131,6 +232,27 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
         : theme.isDark
         ? theme.colors.textSecondary
         : "#6c757d",
+      flex: 1,
+    },
+    locationTimeText: {
+      fontSize: 10,
+      color:
+        currentLocation.type === "live" && currentLocation.isActive
+          ? "#4CAF50"
+          : "#FF9800",
+      fontWeight: "600",
+      marginLeft: 8,
+    },
+    accuracyBadge: {
+      fontSize: 10,
+      color: isOwn
+        ? theme.isDark
+          ? "rgba(255,255,255,0.7)"
+          : "rgba(44, 62, 80, 0.7)"
+        : theme.isDark
+        ? "rgba(233, 237, 239, 0.7)"
+        : "rgba(108, 117, 125, 0.8)",
+      fontStyle: "italic",
     },
     actionButton: {
       flexDirection: "row",
@@ -163,6 +285,21 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
       fontSize: 11,
       color: isOwn ? "rgba(255,255,255,0.6)" : theme.colors.textSecondary,
     },
+    statusContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    statusDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      marginRight: 4,
+    },
+    statusText: {
+      fontSize: 11,
+      color: isOwn ? "rgba(255,255,255,0.8)" : theme.colors.text,
+      fontWeight: "500",
+    },
     accuracyText: {
       fontSize: 11,
       color: isOwn ? "rgba(255,255,255,0.6)" : theme.colors.textSecondary,
@@ -170,7 +307,7 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
     liveIndicator: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: location.isActive ? "#4CAF50" : "#FF9800",
+      backgroundColor: currentLocation.isActive ? "#4CAF50" : "#FF9800",
       paddingHorizontal: 6,
       paddingVertical: 2,
       borderRadius: 10,
@@ -181,6 +318,12 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
       fontSize: 10,
       fontWeight: "600",
       marginLeft: 4,
+    },
+    liveStatusText: {
+      fontSize: 10,
+      color: "#4CAF50",
+      fontWeight: "600",
+      fontStyle: "italic",
     },
     mapPreview: {
       borderRadius: 8,
@@ -271,7 +414,7 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
       width: isSmallScreen ? 44 : 48,
       height: isSmallScreen ? 44 : 48,
       borderRadius: isSmallScreen ? 22 : 24,
-      backgroundColor: theme.isDark 
+      backgroundColor: theme.isDark
         ? theme.colors.primary + "30"
         : theme.colors.primary + "20",
       justifyContent: "center",
@@ -314,54 +457,81 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
       shadowOpacity: 0.15,
       shadowRadius: 2,
     },
-    liveStatusText: {
-      color: "white",
-      fontSize: isSmallScreen ? 9 : 10,
-      fontWeight: "700",
-      marginLeft: 4,
-      letterSpacing: 0.3,
-    },
   });
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.locationIcon}>
-          <Ionicons
-            name={location.type === "live" ? "location" : "location-outline"}
-            size={20}
-            color={
-              location.type === "live" && location.isActive
-                ? "#4CAF50"
-                : isOwn
-                ? theme.isDark
-                  ? "#fff"
-                  : "#128c7e"
-                : theme.colors.primary
-            }
-          />
+          {currentLocation.type === "live" && currentLocation.isActive ? (
+            <Animated.View
+              style={[
+                styles.animatedLocationIcon,
+                {
+                  transform: [{ scale: pulseAnim }],
+                },
+              ]}
+            >
+              <Ionicons name="location" size={20} color="#4CAF50" />
+            </Animated.View>
+          ) : (
+            <Ionicons
+              name={
+                currentLocation.type === "live"
+                  ? "location"
+                  : "location-outline"
+              }
+              size={20}
+              color={
+                currentLocation.type === "live" && !currentLocation.isActive
+                  ? "#FF9800"
+                  : isOwn
+                  ? theme.isDark
+                    ? "#fff"
+                    : "#128c7e"
+                  : theme.colors.primary
+              }
+            />
+          )}
         </View>
         <View style={styles.headerText}>
           <Text style={styles.typeText}>{getLocationTypeText()}</Text>
-          {!isOwn && <Text style={styles.usernameText}>{username}</Text>}
+          {currentLocation.type === "live" && (
+            <Animated.View
+              style={{ opacity: currentLocation.isActive ? pulseAnim : 1 }}
+            >
+              <Text style={styles.locationTimeText}>
+                {formatLocationTime()}
+              </Text>
+            </Animated.View>
+          )}
         </View>
-        {location.type === "live" && (
-          <View style={styles.liveIndicator}>
-            <Ionicons name="radio-button-on" size={8} color="white" />
-            <Text style={styles.liveIndicatorText}>
-              {location.isActive ? "LIVE" : "STOPPED"}
-            </Text>
-          </View>
-        )}
       </View>
 
       <View style={styles.coordinatesContainer}>
-        <Text style={styles.coordinatesText}>{formatCoordinates()}</Text>
+        <View style={styles.coordinatesRow}>
+          <Text style={styles.coordinatesText}>{formatCoordinates()}</Text>
+        </View>
+
+        <View style={styles.detailsRow}>
+          {currentLocation.accuracy && (
+            <Text style={styles.accuracyBadge}>
+              ±{Math.round(currentLocation.accuracy)}m accuracy
+            </Text>
+          )}
+          {currentLocation.type === "live" && currentLocation.isActive && (
+            <Text style={styles.liveStatusText}>📍 Updating live</Text>
+          )}
+        </View>
       </View>
 
       {/* Mini map preview */}
       <View style={styles.mapPreview}>
-        <LocationMapView location={location} height={120} interactive={false} />
+        <LocationMapView
+          location={currentLocation}
+          height={120}
+          interactive={false}
+        />
       </View>
 
       <TouchableOpacity style={styles.actionButton} onPress={openInMaps}>
@@ -371,10 +541,22 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
 
       <View style={styles.footer}>
         <Text style={styles.timestampText}>{formatTime()}</Text>
-        {location.accuracy && (
-          <Text style={styles.accuracyText}>
-            ±{Math.round(location.accuracy)}m
-          </Text>
+        {currentLocation.type === "live" && (
+          <View style={styles.statusContainer}>
+            <View
+              style={[
+                styles.statusDot,
+                {
+                  backgroundColor: currentLocation.isActive
+                    ? "#4CAF50"
+                    : "#FF9800",
+                },
+              ]}
+            />
+            <Text style={styles.statusText}>
+              {currentLocation.isActive ? "Live" : "Stopped"}
+            </Text>
+          </View>
         )}
       </View>
 
@@ -449,7 +631,7 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
           {/* Full Height Interactive Map */}
           <View style={styles.fullMapContainer} pointerEvents="box-none">
             <LocationMapView
-              location={location}
+              location={currentLocation}
               height={
                 height -
                 insets.top -
@@ -478,11 +660,13 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
               <View style={styles.locationIconContainer}>
                 <Ionicons
                   name={
-                    location.type === "live" ? "location" : "location-outline"
+                    currentLocation.type === "live"
+                      ? "location"
+                      : "location-outline"
                   }
                   size={24}
                   color={
-                    location.type === "live" && location.isActive
+                    currentLocation.type === "live" && currentLocation.isActive
                       ? "#4CAF50"
                       : theme.colors.primary
                   }
@@ -506,24 +690,24 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
                 >
                   {formatCoordinates()}
                 </Text>
-                {location.accuracy && (
+                {currentLocation.accuracy && (
                   <Text
                     style={[
                       styles.accuracyInfo,
                       { color: theme.colors.textSecondary },
                     ]}
                   >
-                    Accuracy: ±{Math.round(location.accuracy)}m
+                    Accuracy: ±{Math.round(currentLocation.accuracy)}m
                   </Text>
                 )}
               </View>
 
-              {location.type === "live" && (
+              {currentLocation.type === "live" && (
                 <View
                   style={[
                     styles.liveStatusBadge,
                     {
-                      backgroundColor: location.isActive
+                      backgroundColor: currentLocation.isActive
                         ? "#4CAF50"
                         : "#FF9800",
                     },
@@ -531,7 +715,7 @@ export const LocationMessage: React.FC<LocationMessageProps> = ({
                 >
                   <Ionicons name="radio-button-on" size={12} color="white" />
                   <Text style={styles.liveStatusText}>
-                    {location.isActive ? "LIVE" : "STOPPED"}
+                    {currentLocation.isActive ? "LIVE" : "STOPPED"}
                   </Text>
                 </View>
               )}

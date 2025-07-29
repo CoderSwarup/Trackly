@@ -156,15 +156,15 @@ function ChatContent() {
         clearInterval(liveLocationInterval.current);
         liveLocationInterval.current = null;
       }
-      
+
       // Stop live location if active
       if (isLiveLocationActive) {
         stopLiveLocation();
       }
-      
+
       // Close menu first to prevent re-render
       setShowMenu(false);
-      
+
       // Perform logout
       await logout();
     } catch (error) {
@@ -206,7 +206,7 @@ function ChatContent() {
 
         // Set flag to enable location updates
         shouldUpdateLocation.current = true;
-        
+
         // Set up periodic location updates every 30 seconds
         liveLocationInterval.current = setInterval(async () => {
           // Check if we should still update location
@@ -218,7 +218,7 @@ function ChatContent() {
             }
             return;
           }
-          
+
           try {
             const currentLocation = await Location.getCurrentPositionAsync({
               accuracy: Location.Accuracy.High,
@@ -254,8 +254,11 @@ function ChatContent() {
   };
 
   const handleStopLiveLocation = () => {
-    console.log("handleStopLiveLocation called, isLiveLocationActive:", isLiveLocationActive);
-    
+    console.log(
+      "handleStopLiveLocation called, isLiveLocationActive:",
+      isLiveLocationActive
+    );
+
     // Always disable the update flag and clear interval
     shouldUpdateLocation.current = false;
     if (liveLocationInterval.current) {
@@ -263,7 +266,7 @@ function ChatContent() {
       clearInterval(liveLocationInterval.current);
       liveLocationInterval.current = null;
     }
-    
+
     if (isLiveLocationActive) {
       console.log("Stopping live location via socket");
       stopLiveLocation();
@@ -431,7 +434,7 @@ function ChatContent() {
             color={theme.isDark ? "#00a884" : "#128c7e"}
             style={styles.loadingSpinner}
           />
-          <Text style={styles.loadingTitle}>ChatApp</Text>
+          <Text style={styles.loadingTitle}>Trackly</Text>
           <Text style={styles.loadingSubtitle}>
             Loading your conversations...
           </Text>

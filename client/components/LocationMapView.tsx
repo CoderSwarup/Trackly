@@ -114,22 +114,36 @@ export const LocationMapView: React.FC<LocationMapViewProps> = ({
 
   useEffect(() => {
     if (showAllLocations && liveLocations.length > 0) {
-      // Update live markers with animation
+      // Update live markers with smooth animation
       const newMarkers = liveLocations.map((liveLocation) => {
         const existingMarker = liveMarkers.find(
           (m) => m.userId === liveLocation.userId
         );
 
-        let animatedCoordinate;
+        let animatedCoordinate = existingMarker?.animatedCoordinate;
+        
         // Create or update animated coordinate
         if (Platform.OS !== "web") {
           const { AnimatedRegion } = require("react-native-maps");
-          animatedCoordinate = new AnimatedRegion({
-            latitude: liveLocation.latitude,
-            longitude: liveLocation.longitude,
-            latitudeDelta: 0,
-            longitudeDelta: 0,
-          });
+          
+          if (existingMarker && existingMarker.animatedCoordinate) {
+            // Animate existing coordinate to new position
+            animatedCoordinate = existingMarker.animatedCoordinate;
+            animatedCoordinate.timing({
+              latitude: liveLocation.latitude,
+              longitude: liveLocation.longitude,
+              duration: 1000,
+              useNativeDriver: false,
+            }).start();
+          } else {
+            // Create new animated coordinate for new marker
+            animatedCoordinate = new AnimatedRegion({
+              latitude: liveLocation.latitude,
+              longitude: liveLocation.longitude,
+              latitudeDelta: 0,
+              longitudeDelta: 0,
+            });
+          }
         }
 
         return {

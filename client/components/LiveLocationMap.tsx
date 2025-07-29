@@ -71,16 +71,30 @@ export const LiveLocationMap: React.FC<LiveLocationMapProps> = ({
           (m) => m.userId === location.userId
         );
 
-        let animatedCoordinate;
+        let animatedCoordinate = existingMarker?.animatedCoordinate;
+        
         // Create or update animated coordinate
         if (Platform.OS !== "web") {
           const { AnimatedRegion } = require("react-native-maps");
-          animatedCoordinate = new AnimatedRegion({
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0,
-            longitudeDelta: 0,
-          });
+          
+          if (existingMarker && existingMarker.animatedCoordinate) {
+            // Animate existing coordinate to new position
+            animatedCoordinate = existingMarker.animatedCoordinate;
+            animatedCoordinate.timing({
+              latitude: location.latitude,
+              longitude: location.longitude,
+              duration: 1000,
+              useNativeDriver: false,
+            }).start();
+          } else {
+            // Create new animated coordinate for new marker
+            animatedCoordinate = new AnimatedRegion({
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0,
+              longitudeDelta: 0,
+            });
+          }
         }
 
         return {
